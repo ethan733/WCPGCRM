@@ -1,388 +1,641 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Piano Gallery CRM</title>
-  <link rel="icon" type="image/png" href="logo.png">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>World Class Piano Gallery — CRM</title>
+  <link rel="icon" href="logo.png" type="image/png" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f9;
-      margin: 0;
-      padding: 20px;
-      color: #333;
+    :root{
+      --bg:#f4f4f9; --card:#ffffff; --muted:#6b7280; --accent:#3498db;
+      --green:#2ecc71; --orange:#f39c12; --gray:#95a5a6;
+      --maxw:1100px;
     }
-    header {
-      display: flex;
-      align-items: center;
-      background: #2c3e50;
-      color: white;
-      padding: 15px;
-      border-radius: 0 0 10px 10px;
-      margin-bottom: 20px;
+    *{box-sizing:border-box}
+    body{
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg); color:#111; margin:0; padding:24px;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
-    header img { height: 50px; margin-right: 15px; }
-    header h1 { font-size: 20px; margin: 0; }
+    header{display:flex; align-items:center; gap:16px; max-width:var(--maxw); margin:0 auto 18px;}
+    header img{height:56px; width:auto; border-radius:6px;}
+    header h1{font-size:20px; margin:0; color:#fff; background:linear-gradient(90deg,#2c3e50,#23374a); padding:10px 14px; border-radius:8px;}
+    .container{max-width:var(--maxw); margin:0 auto 40px;}
 
-    form, .controls, .search-bar, .filter-bar {
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      margin-bottom: 20px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      background: #3498db;
-      color: white;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    button:hover { background: #2980b9; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    th, td {
-      padding: 8px;
-      border: 1px solid #ddd;
-      text-align: left;
-      font-size: 14px;
-    }
-    th { background: #3498db; color: #fff; }
-    .actions button { margin-right: 5px; background: #2ecc71; }
-    .actions button.delete { background: #e74c3c; }
-    footer {
-      text-align: center;
-      margin-top: 30px;
-      padding: 15px;
-      background: #2c3e50;
-      color: #fff;
-      border-radius: 10px 10px 0 0;
-    }
-    footer a { color: #3498db; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+    /* Form toggle */
+    .controls-row{display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap;}
+    .btn{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; background:var(--accent); color:#fff; border-radius:8px; border:none; cursor:pointer;}
+    .btn.ghost{background:transparent; color:var(--accent); border:1px solid rgba(52,152,219,.18);}
+    .btn.warn{background:var(--orange)}
+    .btn.small{padding:6px 10px; font-size:14px}
 
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
+    /* Form */
+    #formSection{background:var(--card); padding:18px; border-radius:10px; box-shadow:0 4px 18px rgba(0,0,0,.06); margin-bottom:18px; display:none;}
+    .form-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px;}
+    .form-grid .full{grid-column:1/-1}
+    label{font-weight:600; font-size:13px; color:#111; display:block; margin-bottom:6px;}
+    input[type="text"], input[type="email"], input[type="datetime-local"], input[type="number"], select, textarea, input[type="date"]{
+      width:100%; padding:8px 10px; border-radius:8px; border:1px solid #e6e9ee; background:#fff;
+      font-size:14px;
     }
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 500px;
-      width: 90%;
-    }
-    .modal-close {
-      float: right;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 18px;
+    textarea{min-height:72px; resize:vertical}
+    .section-title{font-weight:700; margin-top:10px; margin-bottom:8px; color:#374151}
+
+    /* Filters/search area */
+    .toolbar{display:flex; gap:12px; align-items:center; margin-bottom:12px; flex-wrap:wrap;}
+    .search{flex:1; min-width:220px;}
+    .select-inline{min-width:150px}
+
+    /* Table simplified */
+    .table-wrap{background:var(--card); border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,.06); overflow:hidden;}
+    table{width:100%; border-collapse:collapse; min-width:640px;}
+    thead{background:#fff; position:sticky; top:0; z-index:1}
+    th, td{padding:12px 14px; text-align:left; font-size:14px; border-bottom:1px solid #f1f5f9;}
+    th{color:#fff; background:linear-gradient(90deg,var(--accent),#2c7bd9); font-weight:700;}
+    tbody tr:nth-child(odd){background:#fcfdff}
+    .badge{display:inline-block; padding:6px 10px; border-radius:999px; font-weight:700; font-size:13px; color:#fff}
+    .badge.new{background:var(--gray)}
+    .badge.working{background:var(--accent)}
+    .badge.closed{background:var(--green)}
+    .actions{display:flex; gap:8px; align-items:center;}
+    .actions button{padding:6px 8px; border-radius:8px; border:none; cursor:pointer}
+    .actions .view{background:#eef2ff; color:var(--accent)}
+    .actions .edit{background:#fff6ea; color:var(--orange)}
+    .actions .delete{background:#fff0f0; color:#e53935}
+
+    /* Expandable detail card */
+    .detail-row{display:none; background:#ffffff; }
+    .detail-card{padding:14px; display:flex; gap:16px; flex-wrap:wrap;}
+    .detail-col{flex:1 1 220px; min-width:220px; background:transparent; padding:8px; border-radius:8px;}
+    .detail-item{margin-bottom:8px}
+    .label{font-weight:700; color:#374151; font-size:13px}
+    .value{color:#111; font-size:14px; margin-top:4px}
+
+    /* Small screens -> stacked cards */
+    @media(max-width:860px){
+      table{display:block}
+      thead{display:none}
+      tbody{display:block}
+      tr{display:block; border-bottom:none; margin-bottom:10px; background:transparent}
+      td{display:flex; justify-content:space-between; padding:10px 12px; border-radius:10px; background:#fff; margin-bottom:6px}
+      td.label{flex-basis:60%}
+      td.value{flex-basis:40%; text-align:right}
+      .detail-row{display:block}
+      .detail-card{display:block; background:#fff; border-radius:10px; padding:12px}
+      .form-grid{grid-template-columns:1fr}
     }
 
-    /* Responsive */
-    @media (max-width: 600px) {
-      header { flex-direction: column; text-align: center; }
-      header img { margin-bottom: 10px; }
-      th, td { font-size: 12px; }
-      button { width: 100%; margin-top: 10px; }
-    }
+    footer{max-width:var(--maxw); margin:28px auto 0; text-align:center; color:var(--muted); font-size:13px}
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Piano Gallery Logo">
-    <h1>Piano Gallery CRM</h1>
+    <img src="logo.png" alt="Logo">
+    <h1>World Class Piano Gallery — CRM</h1>
   </header>
 
-  <!-- Add Client Form -->
-  <form id="clientForm">
-    <label>Name: <input type="text" id="name" required></label>
-    <label>Phone Number: <input type="text" id="phone"></label>
-    <label>Email: <input type="email" id="email"></label>
-    <label>Piano: <input type="text" id="piano"></label>
-    <label>Time of Sale: <input type="datetime-local" id="timeOfSale"></label>
-    <label>Timeline: <input type="text" id="timeline"></label>
-    <label>Status:
-      <select id="status">
-        <option value="New Lead">New Lead</option>
-        <option value="Working Deal">Working Deal</option>
-        <option value="Closed">Closed</option>
-      </select>
-    </label>
-    <label>Notes: <textarea id="notes"></textarea></label>
-    <button type="submit">Add Client</button>
-  </form>
+  <div class="container">
 
-  <!-- Controls -->
-  <div class="controls">
-    <button onclick="exportCSV()">Export CSV</button>
-    <button onclick="exportJSON()">Download Backup (JSON)</button>
-    <button onclick="triggerJSONImport()">Restore Backup (JSON)</button>
-    <input type="file" id="csvFile" accept=".csv" onchange="importCSV(event)" style="display:none;">
-    <input type="file" id="jsonFile" accept=".json" onchange="importJSON(event)" style="display:none;">
-  </div>
+    <div class="controls-row">
+      <button class="btn" id="toggleFormBtn">➕ Add Client</button>
+      <button class="btn ghost small" id="expandAllBtn">Expand All</button>
+      <button class="btn ghost small" id="collapseAllBtn">Collapse All</button>
 
-  <!-- Search + Filter -->
-  <div class="search-bar">
-    <label>Search: <input type="text" id="searchInput" placeholder="Search by name, phone, or piano..."></label>
-  </div>
-  <div class="filter-bar">
-    <label>Filter by Status:
-      <select id="statusFilter">
-        <option value="">All</option>
-        <option value="New Lead">New Lead</option>
-        <option value="Working Deal">Working Deal</option>
-        <option value="Closed">Closed</option>
-      </select>
-    </label>
-  </div>
+      <!-- Export & backup -->
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn ghost small" id="exportCsvBtn">Export CSV</button>
+        <button class="btn ghost small" id="exportJsonBtn">Backup JSON</button>
+        <button class="btn ghost small" id="importJsonBtn">Restore JSON</button>
+        <input id="jsonFile" type="file" accept=".json" style="display:none">
+      </div>
+    </div>
 
-  <!-- Client Table -->
-  <table id="clientTable">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Email</th>
-        <th>Piano</th>
-        <th>Time of Sale</th>
-        <th>Timeline</th>
-        <th>Status</th>
-        <th>Notes</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <!-- Form -->
+    <div id="formSection">
+      <form id="clientForm">
+        <div class="form-grid">
+          <div>
+            <label>Client Name</label>
+            <input id="name" type="text" required placeholder="Full name">
+          </div>
+          <div>
+            <label>Lead Owner</label>
+            <select id="leadOwner" onchange="toggleOtherOwner()">
+              <option>Ethan</option>
+              <option>Tristan</option>
+              <option>Dan</option>
+              <option>Other</option>
+            </select>
+          </div>
 
-  <!-- Edit Modal -->
-  <div class="modal" id="editModal">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closeModal()">&times;</span>
-      <h2>Edit Client</h2>
-      <form id="editForm">
-        <input type="hidden" id="editIndex">
-        <label>Name: <input type="text" id="editName" required></label>
-        <label>Phone Number: <input type="text" id="editPhone"></label>
-        <label>Email: <input type="email" id="editEmail"></label>
-        <label>Piano: <input type="text" id="editPiano"></label>
-        <label>Time of Sale: <input type="datetime-local" id="editTimeOfSale"></label>
-        <label>Timeline: <input type="text" id="editTimeline"></label>
-        <label>Status:
-          <select id="editStatus">
-            <option value="New Lead">New Lead</option>
-            <option value="Working Deal">Working Deal</option>
-            <option value="Closed">Closed</option>
-          </select>
-        </label>
-        <label>Notes: <textarea id="editNotes"></textarea></label>
-        <button type="submit">Save Changes</button>
+          <div>
+            <label>Phone</label>
+            <input id="phone" type="text" placeholder="Phone">
+          </div>
+          <div>
+            <label>Email</label>
+            <input id="email" type="email" placeholder="Email">
+          </div>
+
+          <div class="full">
+            <label class="section-title">Deal Info</label>
+          </div>
+
+          <div>
+            <label>Piano (model)</label>
+            <input id="piano" type="text" placeholder="Make/model">
+          </div>
+          <div>
+            <label>Cost</label>
+            <input id="cost" type="number" step="0.01" min="0" placeholder="0.00">
+          </div>
+
+          <div>
+            <label>Status</label>
+            <select id="status" onchange="toggleClosedDetails();">
+              <option>New Lead</option>
+              <option>Working Deal</option>
+              <option>Closed</option>
+            </select>
+          </div>
+          <div>
+            <label>Timeline</label>
+            <input id="timeline" type="text" placeholder="e.g., 2-week follow up">
+          </div>
+
+          <div class="full">
+            <label>Notes</label>
+            <textarea id="notes" placeholder="Notes / conversation history"></textarea>
+          </div>
+
+          <!-- Closed details (hidden unless Closed) -->
+          <div class="full">
+            <div id="closedDetails" style="display:none; padding:12px; border-radius:8px; border:1px solid #eef2f8; background:#fbfdff">
+              <div style="display:flex;gap:12px; flex-wrap:wrap">
+                <div style="flex:1 1 220px">
+                  <label>Time of Sale</label>
+                  <input id="timeOfSale" type="datetime-local">
+                </div>
+                <div style="flex:1 1 220px">
+                  <label>Delivery Location</label>
+                  <input id="deliveryLocation" type="text" placeholder="Address">
+                </div>
+                <div style="flex:1 1 140px">
+                  <label>Number of Stairs</label>
+                  <input id="stairs" type="number" min="0" placeholder="0">
+                </div>
+              </div>
+
+              <div style="margin-top:12px">
+                <label>Piano Sold (placeholder)</label>
+                <select id="inventoryLink">
+                  <option value="">-- select --</option>
+                  <option>Steinway Model D</option>
+                  <option>Yamaha C7</option>
+                  <option>Baldwin R</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Other owner input -->
+        <div id="otherOwnerRow" style="display:none; max-width:400px; margin-top:10px">
+          <label>Other Owner Name</label>
+          <input id="otherOwner" type="text" placeholder="Owner name">
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:8px;">
+          <button class="btn" type="submit">Save Client</button>
+          <button type="button" class="btn ghost" id="cancelFormBtn">Cancel</button>
+        </div>
       </form>
     </div>
+
+    <!-- Search + filters -->
+    <div class="toolbar" style="margin-bottom:14px;">
+      <div class="search">
+        <input id="searchInput" type="text" placeholder="Search by name, piano, phone..." style="width:100%; padding:10px; border-radius:10px; border:1px solid #e6e9ee">
+      </div>
+      <div class="select-inline">
+        <select id="statusFilter" style="padding:8px 10px; border-radius:8px; border:1px solid #e6e9ee">
+          <option value="">All Statuses</option>
+          <option>New Lead</option>
+          <option>Working Deal</option>
+          <option>Closed</option>
+        </select>
+      </div>
+      <div class="select-inline">
+        <select id="ownerFilter" style="padding:8px 10px; border-radius:8px; border:1px solid #e6e9ee">
+          <option value="">All Owners</option>
+          <option>Ethan</option>
+          <option>Tristan</option>
+          <option>Dan</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div style="margin-left:auto;">
+        <button class="btn ghost small" id="sortCostBtn">Sort Cost ↑</button>
+      </div>
+    </div>
+
+    <!-- Clean simplified table -->
+    <div class="table-wrap">
+      <table id="clientTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Lead Owner</th>
+            <th style="cursor:pointer">Cost</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
   </div>
 
-  <footer>
-    <p>&copy; 2025 Piano Gallery | CRM</p>
-  </footer>
+  <footer>&copy; 2025 World Class Piano Gallery</footer>
 
   <script>
-    const form = document.getElementById('clientForm');
-    const tableBody = document.querySelector('#clientTable tbody');
+    // --- Data & helpers ---
+    let clients = JSON.parse(localStorage.getItem('clients')||'[]');
+    const tbody = document.querySelector('#clientTable tbody');
+
+    // Utility: format money
+    function fmtMoney(v){ return v===undefined||v===''? '' : '$' + Number(v).toFixed(2); }
+    function save(){ localStorage.setItem('clients', JSON.stringify(clients)); }
+
+    // --- UI elements ---
+    const toggleFormBtn = document.getElementById('toggleFormBtn');
+    const formSection = document.getElementById('formSection');
+    const clientForm = document.getElementById('clientForm');
+    const cancelFormBtn = document.getElementById('cancelFormBtn');
     const searchInput = document.getElementById('searchInput');
     const statusFilter = document.getElementById('statusFilter');
-    const editModal = document.getElementById('editModal');
-    const editForm = document.getElementById('editForm');
+    const ownerFilter = document.getElementById('ownerFilter');
+    const statusField = document.getElementById('status');
+    const closedDetails = document.getElementById('closedDetails');
+    const leadOwner = document.getElementById('leadOwner');
+    const otherOwnerRow = document.getElementById('otherOwnerRow');
+    const otherOwnerInput = document.getElementById('otherOwner');
 
-    let clients = JSON.parse(localStorage.getItem('clients') || '[]');
+    // Export / import
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const exportJsonBtn = document.getElementById('exportJsonBtn');
+    const importJsonBtn = document.getElementById('importJsonBtn');
+    const jsonFile = document.getElementById('jsonFile');
 
-    function renderClients(filter = '', status = '') {
-      tableBody.innerHTML = '';
-      clients
-        .filter(c =>
-          (c.name.toLowerCase().includes(filter) ||
-           c.phone.toLowerCase().includes(filter) ||
-           c.piano.toLowerCase().includes(filter)) &&
-          (status === '' || c.status === status)
-        )
-        .forEach((c, i) => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${c.name}</td>
-            <td>${c.phone}</td>
-            <td>${c.email}</td>
-            <td>${c.piano}</td>
-            <td>${c.timeOfSale}</td>
-            <td>${c.timeline}</td>
-            <td>${c.status}</td>
-            <td>${c.notes}</td>
-            <td class="actions">
-              <button onclick="openModal(${i})">Edit</button>
-              <button class="delete" onclick="deleteClient(${i})">Delete</button>
-            </td>
-          `;
-          tableBody.appendChild(row);
-        });
-      localStorage.setItem('clients', JSON.stringify(clients));
-    }
+    // Expand/collapse all
+    const expandAllBtn = document.getElementById('expandAllBtn');
+    const collapseAllBtn = document.getElementById('collapseAllBtn');
 
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const newClient = {
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        piano: document.getElementById('piano').value,
-        timeOfSale: document.getElementById('timeOfSale').value,
-        timeline: document.getElementById('timeline').value,
-        status: document.getElementById('status').value,
-        notes: document.getElementById('notes').value
-      };
-      clients.push(newClient);
-      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
-      form.reset();
+    // Sorting
+    let sortCostAsc = true;
+    const sortCostBtn = document.getElementById('sortCostBtn');
+
+    // --- Toggle form & closed details ---
+    toggleFormBtn.addEventListener('click', () => {
+      formSection.style.display = (formSection.style.display === 'none' || !formSection.style.display) ? 'block' : 'none';
+      if(formSection.style.display === 'block') window.scrollTo({top:0, behavior:'smooth'});
     });
+    cancelFormBtn.addEventListener('click', () => { clientForm.reset(); formSection.style.display='none'; document.getElementById('closedDetails').style.display='none'; otherOwnerRow.style.display='none'; });
 
-    function deleteClient(i) {
-      clients.splice(i, 1);
-      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
+    function toggleClosedDetails(){
+      closedDetails.style.display = statusField.value === 'Closed' ? 'block' : 'none';
+    }
+    function toggleOtherOwner(){
+      otherOwnerRow.style.display = leadOwner.value === 'Other' ? 'block' : 'none';
     }
 
-    function openModal(i) {
-      const c = clients[i];
-      document.getElementById('editIndex').value = i;
-      document.getElementById('editName').value = c.name;
-      document.getElementById('editPhone').value = c.phone;
-      document.getElementById('editEmail').value = c.email;
-      document.getElementById('editPiano').value = c.piano;
-      document.getElementById('editTimeOfSale').value = c.timeOfSale;
-      document.getElementById('editTimeline').value = c.timeline;
-      document.getElementById('editStatus').value = c.status;
-      document.getElementById('editNotes').value = c.notes;
-      editModal.style.display = 'flex';
-    }
+    // --- Render rows (cleaned) ---
+    function renderClients(){
+      const q = (searchInput.value||'').trim().toLowerCase();
+      const sf = statusFilter.value;
+      const of = ownerFilter.value;
 
-    function closeModal() { editModal.style.display = 'none'; }
-
-    editForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const i = document.getElementById('editIndex').value;
-      clients[i] = {
-        name: document.getElementById('editName').value,
-        phone: document.getElementById('editPhone').value,
-        email: document.getElementById('editEmail').value,
-        piano: document.getElementById('editPiano').value,
-        timeOfSale: document.getElementById('editTimeOfSale').value,
-        timeline: document.getElementById('editTimeline').value,
-        status: document.getElementById('editStatus').value,
-        notes: document.getElementById('editNotes').value
-      };
-      closeModal();
-      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
-    });
-
-    function exportCSV() {
-      let csv = 'name,phone,email,piano,timeOfSale,timeline,status,notes\n';
-      clients.forEach(c => {
-        csv += `${c.name},${c.phone},${c.email},${c.piano},${c.timeOfSale},${c.timeline},${c.status},${c.notes}\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'clients.csv';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function importCSV(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const text = e.target.result;
-        const lines = text.trim().split('\n');
-        const headers = lines.shift().split(',');
-        lines.forEach(line => {
-          const values = line.split(',');
-          let c = {};
-          headers.forEach((h, i) => c[h] = values[i]);
-          clients.push(c);
-        });
-        renderClients(searchInput.value.toLowerCase(), statusFilter.value);
-      };
-      reader.readAsText(file);
-    }
-
-    function exportJSON() {
-      const json = JSON.stringify(clients, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'clients-backup.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function triggerJSONImport() {
-      document.getElementById('jsonFile').click();
-    }
-
-    function importJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported)) {
-            clients = imported;
-            renderClients(searchInput.value.toLowerCase(), statusFilter.value);
-          } else {
-            alert('Invalid JSON format');
-          }
-        } catch (err) {
-          alert('Error reading JSON: ' + err.message);
+      // Filter + sort
+      let list = clients.filter(c=>{
+        if(sf && c.status !== sf) return false;
+        if(of && of !== 'Other'){
+          if(c.leadOwner !== of) return false;
+        } else if(of === 'Other'){
+          if(['Ethan','Tristan','Dan'].includes(c.leadOwner)) return false;
         }
-      };
-      reader.readAsText(file);
+        if(!q) return true;
+        return (c.name||'').toLowerCase().includes(q) || (c.piano||'').toLowerCase().includes(q) || (c.phone||'').toLowerCase().includes(q);
+      });
+
+      // Sort cost if requested (sortCostAsc toggles)
+      if(sortCostBtn.dataset.active === 'true'){
+        list.sort((a,b)=>{
+          const na = Number(a.cost||0), nb = Number(b.cost||0);
+          return sortCostAsc ? na - nb : nb - na;
+        });
+      }
+
+      tbody.innerHTML = '';
+      list.forEach((c, idx)=>{
+        // main row
+        const tr = document.createElement('tr');
+        tr.dataset.index = idx;
+        tr.innerHTML = `
+          <td style="font-weight:700">${escapeHtml(c.name||'—')}</td>
+          <td>${statusBadge(c.status)}</td>
+          <td>${escapeHtml(c.leadOwner||'—')}</td>
+          <td>${fmtMoney(c.cost)}</td>
+          <td class="actions">
+            <button class="view" data-i="${idx}">View Details</button>
+            <button class="edit" data-i="${idx}">Edit</button>
+            <button class="delete" data-i="${idx}">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+
+        // detail row (card)
+        const dtr = document.createElement('tr');
+        dtr.className = 'detail-row';
+        dtr.style.display = 'none';
+        const td = document.createElement('td');
+        td.colSpan = 5;
+        td.innerHTML = detailCardHtml(c);
+        td.className = 'detail-cell';
+        dtr.appendChild(td);
+        tbody.appendChild(dtr);
+      });
+
+      // attach listeners to dynamic buttons
+      Array.from(document.querySelectorAll('.view')).forEach(b=>{
+        b.onclick = e => {
+          const i = parseInt(b.getAttribute('data-i'));
+          toggleExpandRow(i);
+        };
+      });
+      Array.from(document.querySelectorAll('.edit')).forEach(b=>{
+        b.onclick = e => { const i = parseInt(b.getAttribute('data-i')); startEdit(i); };
+      });
+      Array.from(document.querySelectorAll('.delete')).forEach(b=>{
+        b.onclick = e => { const i = parseInt(b.getAttribute('data-i')); confirmDelete(i); };
+      });
+
+      save();
     }
 
-    searchInput.addEventListener('input', () => {
-      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
+    function statusBadge(status){
+      const map = {'New Lead':'new','Working Deal':'working','Closed':'closed'};
+      const cls = map[status]||'new';
+      return `<span class="badge ${cls}">${escapeHtml(status)}</span>`;
+    }
+
+    function detailCardHtml(c){
+      // build HTML for details (clean card layout)
+      const phone = c.phone||'—';
+      const email = c.email||'—';
+      const piano = c.piano||'—';
+      const timeline = c.timeline||'—';
+      const notes = c.notes? escapeHtml(c.notes).replace(/\n/g,'<br>') : '—';
+
+      let closedHtml = '';
+      if(c.status === 'Closed' && c.closedDetails){
+        closedHtml = `<div style="margin-top:8px; border-top:1px dashed #e6edf7; padding-top:10px">
+          <div class="label">Closed Deal Details</div>
+          <div class="detail-item"><span class="label">Time of Sale</span><div class="value">${escapeHtml(c.closedDetails.timeOfSale||'—')}</div></div>
+          <div class="detail-item"><span class="label">Delivery Location</span><div class="value">${escapeHtml(c.closedDetails.deliveryLocation||'—')}</div></div>
+          <div class="detail-item"><span class="label">Stairs</span><div class="value">${escapeHtml(c.closedDetails.stairs||'—')}</div></div>
+          <div class="detail-item"><span class="label">Piano Sold</span><div class="value">${escapeHtml(c.closedDetails.pianoSold||'—')}</div></div>
+        </div>`;
+      }
+
+      return `<div class="detail-card">
+        <div class="detail-col">
+          <div class="detail-item"><div class="label">Phone</div><div class="value">${escapeHtml(phone)}</div></div>
+          <div class="detail-item"><div class="label">Email</div><div class="value">${escapeHtml(email)}</div></div>
+          <div class="detail-item"><div class="label">Piano</div><div class="value">${escapeHtml(piano)}</div></div>
+        </div>
+        <div class="detail-col">
+          <div class="detail-item"><div class="label">Timeline</div><div class="value">${escapeHtml(timeline)}</div></div>
+          <div class="detail-item"><div class="label">Notes</div><div class="value">${notes}</div></div>
+          ${closedHtml}
+        </div>
+      </div>`;
+    }
+
+    function escapeHtml(str){
+      if(str===null || str===undefined) return '';
+      return String(str).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });
+    }
+
+    // Expand/collapse row i
+    function toggleExpandRow(i){
+      // We used filtered list; we need to find the actual row index in tbody.
+      // Approach: find i-th pair of rows (main + detail) in current tbody.
+      const rows = Array.from(tbody.children);
+      // each item is two rows, so main row index = pos*2 where pos = i
+      const mainPos = i*2;
+      const detailRow = rows[mainPos+1];
+      if(!detailRow) return;
+      detailRow.style.display = detailRow.style.display === 'table-row' || detailRow.style.display === 'block' ? 'none' : (isMobile()? 'block' : 'table-row');
+    }
+
+    function isMobile(){ return window.matchMedia('(max-width:860px)').matches; }
+
+    // Expand all / collapse all
+    expandAllBtn.addEventListener('click', ()=>{
+      Array.from(tbody.querySelectorAll('.detail-row')).forEach(r => r.style.display = isMobile() ? 'block' : 'table-row');
     });
-    statusFilter.addEventListener('change', () => {
-      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
+    collapseAllBtn.addEventListener('click', ()=>{
+      Array.from(tbody.querySelectorAll('.detail-row')).forEach(r => r.style.display = 'none');
     });
 
+    // --- Create / edit / delete ---
+    let editingIndex = null;
+    function startEdit(globalIndex){
+      // globalIndex is index inside filtered list; to support editing we will get the actual client object by matching unique id
+      // For simplicity here we set editingIndex to the index in the full clients array by matching name+phone+email+cost time combo
+      const filtered = getFilteredList();
+      const client = filtered[globalIndex];
+      // find actual index in clients array
+      const actualIndex = clients.findIndex(c => c._id === client._id);
+      if(actualIndex === -1){ alert('Could not locate client'); return; }
+      editingIndex = actualIndex;
+      populateForm(clients[actualIndex]);
+      // show form
+      formSection.style.display='block';
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function populateForm(c){
+      document.getElementById('name').value = c.name||'';
+      document.getElementById('phone').value = c.phone||'';
+      document.getElementById('email').value = c.email||'';
+      document.getElementById('piano').value = c.piano||'';
+      document.getElementById('cost').value = c.cost||'';
+      document.getElementById('status').value = c.status||'New Lead';
+      document.getElementById('timeline').value = c.timeline||'';
+      document.getElementById('notes').value = c.notes||'';
+      if(['Ethan','Tristan','Dan'].includes(c.leadOwner)) {
+        leadOwner.value = c.leadOwner;
+        otherOwnerRow.style.display='none';
+      } else {
+        leadOwner.value = 'Other';
+        otherOwnerRow.style.display='block';
+        otherOwnerInput.value = c.leadOwner||'';
+      }
+
+      if(c.status === 'Closed' && c.closedDetails){
+        closedDetails.style.display='block';
+        document.getElementById('timeOfSale').value = c.closedDetails.timeOfSale || '';
+        document.getElementById('deliveryLocation').value = c.closedDetails.deliveryLocation || '';
+        document.getElementById('stairs').value = c.closedDetails.stairs || '';
+        document.getElementById('inventoryLink').value = c.closedDetails.pianoSold || '';
+      } else {
+        closedDetails.style.display='none';
+      }
+    }
+
+    function confirmDelete(globalIndex){
+      const filtered = getFilteredList();
+      const client = filtered[globalIndex];
+      const idx = clients.findIndex(c => c._id === client._id);
+      if(idx === -1) return;
+      if(confirm('Delete this client?')){ clients.splice(idx,1); save(); renderClients(); }
+    }
+
+    // --- Form submit (create/update) ---
+    clientForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      // validate basic
+      const name = document.getElementById('name').value.trim();
+      if(!name) return alert('Name required');
+
+      let owner = leadOwner.value === 'Other' ? (otherOwnerInput.value.trim()||'Other') : leadOwner.value;
+      const obj = {
+        _id: editingIndex !== null ? clients[editingIndex]._id : 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+        name,
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        piano: document.getElementById('piano').value.trim(),
+        cost: document.getElementById('cost').value,
+        status: document.getElementById('status').value,
+        leadOwner: owner,
+        timeline: document.getElementById('timeline').value.trim(),
+        notes: document.getElementById('notes').value.trim(),
+        closedDetails: {}
+      };
+
+      if(obj.status === 'Closed'){
+        const ts = document.getElementById('timeOfSale').value;
+        const dl = document.getElementById('deliveryLocation').value.trim();
+        const st = document.getElementById('stairs').value;
+        const ps = document.getElementById('inventoryLink').value;
+        if(!ts || !dl || !st || !ps){
+          return alert('When status = Closed, Time of Sale, Delivery Location, Stairs and Piano Sold are required.');
+        }
+        obj.closedDetails = { timeOfSale: ts, deliveryLocation: dl, stairs: st, pianoSold: ps };
+      }
+
+      if(editingIndex !== null){
+        clients[editingIndex] = obj;
+        editingIndex = null;
+      } else {
+        clients.push(obj);
+      }
+      clientForm.reset();
+      closedDetails.style.display='none';
+      otherOwnerRow.style.display='none';
+      formSection.style.display='none';
+      save();
+      renderClients();
+    });
+
+    // --- Filters & search helpers ---
+    searchInput.addEventListener('input', ()=> renderClients());
+    statusFilter.addEventListener('change', ()=> renderClients());
+    ownerFilter.addEventListener('change', ()=> renderClients());
+    leadOwner.addEventListener('change', toggleOtherOwner);
+    statusField.addEventListener('change', toggleClosedDetails);
+
+    function getFilteredList(){
+      const q = (searchInput.value||'').trim().toLowerCase();
+      const sf = statusFilter.value;
+      const of = ownerFilter.value;
+      return clients.filter(c=>{
+        if(sf && c.status !== sf) return false;
+        if(of && of !== 'Other'){
+          if(c.leadOwner !== of) return false;
+        } else if(of === 'Other'){
+          if(['Ethan','Tristan','Dan'].includes(c.leadOwner)) return false;
+        }
+        if(!q) return true;
+        return (c.name||'').toLowerCase().includes(q) || (c.piano||'').toLowerCase().includes(q) || (c.phone||'').toLowerCase().includes(q);
+      });
+    }
+
+    // --- Sorting ---
+    sortCostBtn.addEventListener('click', ()=>{
+      sortCostBtn.dataset.active = sortCostBtn.dataset.active === 'true' ? 'false' : 'true';
+      sortCostAsc = !sortCostAsc;
+      sortCostBtn.innerText = `Sort Cost ${sortCostAsc ? '↑' : '↓'}`;
+      renderClients();
+    });
+
+    // --- Export / Import ---
+    function downloadFile(content, filename, type='text/csv'){
+      const blob = new Blob([content], {type});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    exportCsvBtn.addEventListener('click', ()=>{
+      let csv = 'name,status,leadOwner,cost,phone,email,piano,timeline,notes,timeOfSale,deliveryLocation,stairs,pianoSold\n';
+      clients.forEach(c=>{
+        const cd = c.closedDetails || {};
+        csv += `"${c.name}","${c.status}","${c.leadOwner}","${c.cost}","${c.phone}","${c.email}","${c.piano}","${c.timeline}","${(c.notes||'').replace(/"/g,'""')}","${cd.timeOfSale||''}","${cd.deliveryLocation||''}","${cd.stairs||''}","${cd.pianoSold||''}"\n`;
+      });
+      downloadFile(csv, 'clients.csv', 'text/csv');
+    });
+
+    exportJsonBtn.addEventListener('click', ()=>{
+      downloadFile(JSON.stringify(clients, null, 2), 'clients.json', 'application/json');
+    });
+
+    importJsonBtn.addEventListener('click', ()=> jsonFile.click());
+    jsonFile.addEventListener('change', (e)=>{
+      const file = e.target.files[0]; if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try{
+          const parsed = JSON.parse(ev.target.result);
+          if(Array.isArray(parsed)){
+            clients = parsed;
+            save();
+            renderClients();
+            alert('Imported clients.json');
+          } else alert('Invalid JSON structure (expected array).');
+        } catch(err){ alert('Invalid JSON file.'); }
+      };
+      reader.readAsText(file);
+    });
+
+    // --- Utilities: unique id assignment for existing records without _id ---
+    (function ensureIds(){
+      let changed=false;
+      clients.forEach(c => { if(!c._id){ c._id = 'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,8); changed=true }});
+      if(changed) save();
+    })();
+
+    // --- initial render ---
     renderClients();
+
+    // expose render to window for debugging (optional)
+    window.__crm_render = renderClients;
+
   </script>
 </body>
 </html>
