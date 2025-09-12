@@ -4,12 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Piano Gallery CRM</title>
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="logo.png">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
+      background: #f4f4f9;
       margin: 0;
       padding: 20px;
       color: #333;
@@ -17,24 +16,18 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
       background: #2c3e50;
       color: white;
-      padding: 20px;
+      padding: 15px;
       border-radius: 0 0 10px 10px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
-    header img {
-      height: 60px;
-      margin-right: 15px;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
-    form, .controls, .search-bar {
+    header img { height: 50px; margin-right: 15px; }
+    header h1 { font-size: 20px; margin: 0; }
+
+    form, .controls, .search-bar, .filter-bar {
       background: #fff;
-      padding: 20px;
+      padding: 15px;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       margin-bottom: 20px;
@@ -42,11 +35,7 @@
       margin-left: auto;
       margin-right: auto;
     }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
+    label { display: block; margin-top: 10px; font-weight: bold; }
     input, textarea, select {
       width: 100%;
       padding: 8px;
@@ -65,9 +54,7 @@
       font-size: 15px;
       cursor: pointer;
     }
-    button:hover {
-      background: #2980b9;
-    }
+    button:hover { background: #2980b9; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -75,62 +62,56 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     th, td {
-      padding: 10px;
+      padding: 8px;
       border: 1px solid #ddd;
       text-align: left;
+      font-size: 14px;
     }
-    th {
-      background: #3498db;
-      color: #fff;
-    }
-    .actions button {
-      margin-right: 5px;
-      background: #2ecc71;
-    }
-    .actions button.delete {
-      background: #e74c3c;
-    }
+    th { background: #3498db; color: #fff; }
+    .actions button { margin-right: 5px; background: #2ecc71; }
+    .actions button.delete { background: #e74c3c; }
     footer {
       text-align: center;
       margin-top: 30px;
-      padding: 20px;
+      padding: 15px;
       background: #2c3e50;
       color: #fff;
       border-radius: 10px 10px 0 0;
     }
-    footer a {
-      color: #3498db;
-      text-decoration: none;
-      margin: 0 10px;
+    footer a { color: #3498db; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
     }
-    footer a:hover {
-      text-decoration: underline;
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
     }
-    /* Mobile responsiveness */
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-      header {
-        flex-direction: column;
-        text-align: center;
-      }
-      header img {
-        margin-bottom: 10px;
-      }
-      form, .controls, .search-bar {
-        width: 100%;
-        padding: 15px;
-      }
-      table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-      button {
-        width: 100%;
-        margin-top: 10px;
-      }
+    .modal-close {
+      float: right;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header { flex-direction: column; text-align: center; }
+      header img { margin-bottom: 10px; }
+      th, td { font-size: 12px; }
+      button { width: 100%; margin-top: 10px; }
     }
   </style>
 </head>
@@ -140,6 +121,7 @@
     <h1>Piano Gallery CRM</h1>
   </header>
 
+  <!-- Add Client Form -->
   <form id="clientForm">
     <label>Name: <input type="text" id="name" required></label>
     <label>Phone Number: <input type="text" id="phone"></label>
@@ -158,6 +140,7 @@
     <button type="submit">Add Client</button>
   </form>
 
+  <!-- Controls -->
   <div class="controls">
     <button onclick="exportCSV()">Export CSV</button>
     <button onclick="exportJSON()">Download Backup (JSON)</button>
@@ -166,10 +149,22 @@
     <input type="file" id="jsonFile" accept=".json" onchange="importJSON(event)" style="display:none;">
   </div>
 
+  <!-- Search + Filter -->
   <div class="search-bar">
     <label>Search: <input type="text" id="searchInput" placeholder="Search by name, phone, or piano..."></label>
   </div>
+  <div class="filter-bar">
+    <label>Filter by Status:
+      <select id="statusFilter">
+        <option value="">All</option>
+        <option value="New Lead">New Lead</option>
+        <option value="Working Deal">Working Deal</option>
+        <option value="Closed">Closed</option>
+      </select>
+    </label>
+  </div>
 
+  <!-- Client Table -->
   <table id="clientTable">
     <thead>
       <tr>
@@ -187,24 +182,54 @@
     <tbody></tbody>
   </table>
 
+  <!-- Edit Modal -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <h2>Edit Client</h2>
+      <form id="editForm">
+        <input type="hidden" id="editIndex">
+        <label>Name: <input type="text" id="editName" required></label>
+        <label>Phone Number: <input type="text" id="editPhone"></label>
+        <label>Email: <input type="email" id="editEmail"></label>
+        <label>Piano: <input type="text" id="editPiano"></label>
+        <label>Time of Sale: <input type="datetime-local" id="editTimeOfSale"></label>
+        <label>Timeline: <input type="text" id="editTimeline"></label>
+        <label>Status:
+          <select id="editStatus">
+            <option value="New Lead">New Lead</option>
+            <option value="Working Deal">Working Deal</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </label>
+        <label>Notes: <textarea id="editNotes"></textarea></label>
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
   <footer>
-    <p>&copy; 2025 Piano Gallery | Inventory</p>
+    <p>&copy; 2025 Piano Gallery | CRM</p>
   </footer>
 
   <script>
     const form = document.getElementById('clientForm');
     const tableBody = document.querySelector('#clientTable tbody');
     const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const editModal = document.getElementById('editModal');
+    const editForm = document.getElementById('editForm');
 
     let clients = JSON.parse(localStorage.getItem('clients') || '[]');
 
-    function renderClients(filter = '') {
+    function renderClients(filter = '', status = '') {
       tableBody.innerHTML = '';
       clients
         .filter(c =>
-          c.name.toLowerCase().includes(filter) ||
-          c.phone.toLowerCase().includes(filter) ||
-          c.piano.toLowerCase().includes(filter)
+          (c.name.toLowerCase().includes(filter) ||
+           c.phone.toLowerCase().includes(filter) ||
+           c.piano.toLowerCase().includes(filter)) &&
+          (status === '' || c.status === status)
         )
         .forEach((c, i) => {
           const row = document.createElement('tr');
@@ -218,7 +243,7 @@
             <td>${c.status}</td>
             <td>${c.notes}</td>
             <td class="actions">
-              <button onclick="editClient(${i})">Edit</button>
+              <button onclick="openModal(${i})">Edit</button>
               <button class="delete" onclick="deleteClient(${i})">Delete</button>
             </td>
           `;
@@ -240,28 +265,47 @@
         notes: document.getElementById('notes').value
       };
       clients.push(newClient);
-      renderClients(searchInput.value.toLowerCase());
+      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
       form.reset();
     });
 
     function deleteClient(i) {
       clients.splice(i, 1);
-      renderClients(searchInput.value.toLowerCase());
+      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
     }
 
-    function editClient(i) {
+    function openModal(i) {
       const c = clients[i];
-      document.getElementById('name').value = c.name;
-      document.getElementById('phone').value = c.phone;
-      document.getElementById('email').value = c.email;
-      document.getElementById('piano').value = c.piano;
-      document.getElementById('timeOfSale').value = c.timeOfSale;
-      document.getElementById('timeline').value = c.timeline;
-      document.getElementById('status').value = c.status;
-      document.getElementById('notes').value = c.notes;
-      clients.splice(i, 1);
-      renderClients(searchInput.value.toLowerCase());
+      document.getElementById('editIndex').value = i;
+      document.getElementById('editName').value = c.name;
+      document.getElementById('editPhone').value = c.phone;
+      document.getElementById('editEmail').value = c.email;
+      document.getElementById('editPiano').value = c.piano;
+      document.getElementById('editTimeOfSale').value = c.timeOfSale;
+      document.getElementById('editTimeline').value = c.timeline;
+      document.getElementById('editStatus').value = c.status;
+      document.getElementById('editNotes').value = c.notes;
+      editModal.style.display = 'flex';
     }
+
+    function closeModal() { editModal.style.display = 'none'; }
+
+    editForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const i = document.getElementById('editIndex').value;
+      clients[i] = {
+        name: document.getElementById('editName').value,
+        phone: document.getElementById('editPhone').value,
+        email: document.getElementById('editEmail').value,
+        piano: document.getElementById('editPiano').value,
+        timeOfSale: document.getElementById('editTimeOfSale').value,
+        timeline: document.getElementById('editTimeline').value,
+        status: document.getElementById('editStatus').value,
+        notes: document.getElementById('editNotes').value
+      };
+      closeModal();
+      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
+    });
 
     function exportCSV() {
       let csv = 'name,phone,email,piano,timeOfSale,timeline,status,notes\n';
@@ -291,7 +335,7 @@
           headers.forEach((h, i) => c[h] = values[i]);
           clients.push(c);
         });
-        renderClients(searchInput.value.toLowerCase());
+        renderClients(searchInput.value.toLowerCase(), statusFilter.value);
       };
       reader.readAsText(file);
     }
@@ -320,7 +364,7 @@
           const imported = JSON.parse(e.target.result);
           if (Array.isArray(imported)) {
             clients = imported;
-            renderClients(searchInput.value.toLowerCase());
+            renderClients(searchInput.value.toLowerCase(), statusFilter.value);
           } else {
             alert('Invalid JSON format');
           }
@@ -332,7 +376,10 @@
     }
 
     searchInput.addEventListener('input', () => {
-      renderClients(searchInput.value.toLowerCase());
+      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
+    });
+    statusFilter.addEventListener('change', () => {
+      renderClients(searchInput.value.toLowerCase(), statusFilter.value);
     });
 
     renderClients();
