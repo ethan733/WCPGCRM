@@ -1,428 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>World Class Piano Gallery — CRM (Preview)</title>
-  <link rel="icon" href="logo.png" type="image/png" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Piano Gallery CRM</title>
   <style>
-    :root{--bg:#f4f4f9; --card:#ffffff; --muted:#6b7280; --accent:#3498db; --maxw:1100px; --green:#2ecc71; --blue:#3b82f6; --gray:#9ca3af}
-    *{box-sizing:border-box}
-    body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial; background:var(--bg); margin:0; padding:22px; color:#111}
-    header{display:flex;align-items:center;gap:12px;max-width:var(--maxw);margin:0 auto 18px}
-    header img{height:56px;border-radius:6px}
-    header h1{margin:0;font-size:18px;background:linear-gradient(90deg,#2c3e50,#23374a); color:#fff; padding:8px 12px;border-radius:8px}
-
-    .container{max-width:var(--maxw);margin:0 auto}
-    .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-    .btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
-    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(52,152,219,.14)}
-    .btn.small{padding:6px 8px;font-size:13px}
-    .btn.warn{background:#f59e0b;color:#fff}
-
-    /* Form */
-    #formSection{display:none;background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.06);margin-bottom:14px}
-    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-    .form-grid .full{grid-column:1/-1}
-    label{display:block;font-weight:600;font-size:13px;margin-bottom:6px;color:#111}
-    input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ee;font-size:14px;background:#fff}
-    textarea{min-height:80px;resize:vertical}
-
-    /* Filters & search */
-    .toolbar{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-    .search{flex:1;min-width:200px}
-    .select-inline{min-width:150px}
-
-    /* Table */
-    .table-wrap{background:var(--card);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.06);overflow:hidden}
-    table{width:100%;border-collapse:collapse;min-width:640px}
-    thead th{background:linear-gradient(90deg,var(--accent),#2c7bd9);color:#fff;padding:12px 14px;text-align:left;font-weight:700}
-    th,td{padding:12px 14px;border-bottom:1px solid #f1f5f9;font-size:14px}
-    tbody tr:nth-child(odd){background:#fcfdff}
-    .actions{display:flex;gap:8px;align-items:center}
-    .actions button{padding:6px 8px;border-radius:8px;border:none;cursor:pointer}
-    .actions .view{background:#eef2ff;color:var(--blue)}
-    .actions .edit{background:#fff6ea;color:#d97706}
-    .actions .delete{background:#fff0f0;color:#e11d48}
-
-    /* badges */
-    .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:700;color:#fff;font-size:13px}
-    .badge.closed{background:var(--green)}
-    .badge.working{background:var(--blue)}
-    .badge.new{background:var(--gray)}
-
-    /* Detail card */
-    .detail-row{display:none;background:#fff}
-    .detail-card{display:flex;gap:16px;padding:12px;flex-wrap:wrap}
-    .detail-col{flex:1 1 220px;min-width:220px}
-    .label{font-weight:700;color:#374151;font-size:13px}
-    .value{color:#111;margin-top:6px}
-
-    /* responsive stacked list for small screens */
-    @media(max-width:860px){
-      table{display:block}
-      thead{display:none}
-      tbody{display:block}
-      tr{display:block;margin-bottom:10px}
-      td{display:flex;justify-content:space-between;padding:10px;background:#fff;border-radius:10px;margin-bottom:6px}
-      .actions{justify-content:flex-end}
-      .detail-row{display:block}
-      .detail-card{display:block;background:#fff;border-radius:10px;padding:12px}
-      .form-grid{grid-template-columns:1fr}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+      color: #333;
     }
-
-    footer{max-width:var(--maxw);margin:26px auto 0;text-align:center;color:#6b7280;font-size:13px}
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+      border-radius: 0 0 10px 10px;
+      margin-bottom: 30px;
+    }
+    header img {
+      height: 60px;
+      margin-right: 15px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .form-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #3498db;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: #3498db;
+      color: #fff;
+    }
+    .expandable {
+      display: none;
+      background: #f9f9f9;
+    }
+    .expandable td {
+      padding: 15px;
+      border-top: none;
+    }
+    .actions button {
+      margin-right: 5px;
+      background: #2ecc71;
+    }
+    .actions button.delete {
+      background: #e74c3c;
+    }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Logo">
-    <h1>World Class Piano Gallery — CRM (Preview)</h1>
+    <img src="logo.png" alt="Piano Gallery Logo">
+    <h1>Piano Gallery CRM</h1>
   </header>
 
-  <div class="container">
-
-    <div class="controls">
-      <button class="btn" id="toggleFormBtn">➕ Add Client</button>
-      <button class="btn ghost small" id="expandAllBtn">Expand All</button>
-      <button class="btn ghost small" id="collapseAllBtn">Collapse All</button>
-      <div style="margin-left:auto;display:flex;gap:8px">
-        <button class="btn ghost small" id="exportCsvBtn">Export CSV</button>
-        <button class="btn ghost small" id="exportJsonBtn">Backup JSON</button>
-        <button class="btn ghost small" id="importJsonBtn">Restore JSON</button>
-        <input id="jsonFile" type="file" accept=".json" style="display:none">
+  <div class="form-container">
+    <form id="clientForm">
+      <label>Name: <input type="text" id="name" required></label>
+      <label>Phone Number: <input type="text" id="phone"></label>
+      <label>Email: <input type="email" id="email"></label>
+      <label>Piano: <input type="text" id="piano"></label>
+      <label>Last Contacted: <input type="date" id="lastContacted"></label>
+      <label>Status:
+        <select id="status">
+          <option value="New Lead">New Lead</option>
+          <option value="Working Deal">Working Deal</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </label>
+      <label>Cost: <input type="number" id="cost" min="0" step="0.01"></label>
+      <label>Lead Owner:
+        <select id="leadOwner">
+          <option value="Ethan">Ethan</option>
+          <option value="Tristan">Tristan</option>
+          <option value="Dan">Dan</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+      <label>Notes: <textarea id="notes"></textarea></label>
+      <div id="closedDetails" style="display:none;">
+        <h3>Closed Deal Details</h3>
+        <label>Time of Sale: <input type="datetime-local" id="timeOfSale"></label>
+        <label>Delivery Location: <input type="text" id="deliveryLocation"></label>
+        <label>Number of Stairs: <input type="number" id="stairs" min="0"></label>
       </div>
-    </div>
-
-    <!-- Form (collapsible) -->
-    <div id="formSection">
-      <form id="clientForm">
-        <div class="form-grid">
-          <div>
-            <label>Client Name</label>
-            <input id="name" type="text" required placeholder="Full name">
-          </div>
-          <div>
-            <label>Phone Number</label>
-            <input id="phone" type="text" placeholder="Phone number">
-          </div>
-
-          <div>
-            <label>Email</label>
-            <input id="email" type="email" placeholder="Email address">
-          </div>
-          <div>
-            <label>Piano (model)</label>
-            <input id="piano" type="text" placeholder="Make/model">
-          </div>
-
-          <div>
-            <label>Last Contacted</label>
-            <input id="lastContacted" type="date">
-          </div>
-          <div>
-            <label>Lead Owner</label>
-            <select id="leadOwner" onchange="toggleOtherOwner()"><option>Ethan</option><option>Tristan</option><option>Dan</option><option>Other</option></select>
-          </div>
-
-          <div class="full">
-            <label class="section-title">Deal Info</label>
-          </div>
-          <div>
-            <label>Cost</label>
-            <input id="cost" type="number" step="0.01" min="0" placeholder="0.00">
-          </div>
-          <div>
-            <label>Status</label>
-            <select id="status" onchange="toggleClosedDetails();"><option>New Lead</option><option>Working Deal</option><option>Closed</option></select>
-          </div>
-
-          <div class="full">
-            <label>Timeline</label>
-            <input id="timeline" type="text" placeholder="e.g., 2-week follow up">
-          </div>
-
-          <div class="full">
-            <label>Notes</label>
-            <textarea id="notes" placeholder="Notes / conversation history"></textarea>
-          </div>
-
-          <div id="closedDetails" style="display:none" class="full">
-            <div style="padding:10px;border-radius:8px;border:1px solid #eef2f8;background:#fbfdff">
-              <div style="display:flex;gap:12px;flex-wrap:wrap">
-                <div style="flex:1 1 220px"><label>Time of Sale</label><input id="timeOfSale" type="datetime-local"></div>
-                <div style="flex:1 1 220px"><label>Delivery Location</label><input id="deliveryLocation" type="text" placeholder="Address"></div>
-                <div style="flex:1 1 120px"><label>Number of Stairs</label><input id="stairs" type="number" min="0" placeholder="0"></div>
-              </div>
-              <div style="margin-top:10px"><label>Piano Sold (placeholder)</label><select id="inventoryLink"><option value="">-- select --</option><option>Steinway Model D</option><option>Yamaha C7</option><option>Baldwin R</option></select></div>
-            </div>
-          </div>
-
-        </div>
-
-        <div id="otherOwnerRow" style="display:none;margin-top:12px;max-width:420px">
-          <label>Other Owner Name</label>
-          <input id="otherOwner" type="text" placeholder="Owner name">
-        </div>
-
-        <div style="margin-top:12px;display:flex;gap:8px">
-          <button class="btn" type="submit">Save Client</button>
-          <button type="button" class="btn ghost" id="cancelFormBtn">Cancel</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- search & filters -->
-    <div class="toolbar">
-      <div class="search"><input id="searchInput" type="text" placeholder="Search by name, piano, phone..." style="width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ee"></div>
-      <div class="select-inline"><select id="statusFilter" style="padding:8px;border-radius:8px;border:1px solid #e6e9ee"><option value="">All Statuses</option><option>New Lead</option><option>Working Deal</option><option>Closed</option></select></div>
-      <div class="select-inline"><select id="ownerFilter" style="padding:8px;border-radius:8px;border:1px solid #e6e9ee"><option value="">All Owners</option><option>Ethan</option><option>Tristan</option><option>Dan</option><option>Other</option></select></div>
-      <div style="margin-left:auto"><button class="btn ghost small" id="sortCostBtn">Sort Cost ↑</button></div>
-    </div>
-
-    <div class="table-wrap">
-      <table id="clientTable">
-        <thead>
-          <tr><th>Name</th><th>Phone</th><th>Email</th><th>Piano</th><th>Last Contacted</th><th>Actions</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
+      <button type="submit">Add Client</button>
+    </form>
   </div>
 
-  <footer>&copy; 2025 World Class Piano Gallery</footer>
+  <table id="clientTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Piano</th>
+        <th>Last Contacted</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
-    // Data
-    let clients = JSON.parse(localStorage.getItem('clients')||'[]');
-    const tbody = document.querySelector('#clientTable tbody');
-
-    // Elements
-    const toggleFormBtn = document.getElementById('toggleFormBtn');
-    const formSection = document.getElementById('formSection');
-    const clientForm = document.getElementById('clientForm');
-    const cancelFormBtn = document.getElementById('cancelFormBtn');
-    const searchInput = document.getElementById('searchInput');
-    const statusFilter = document.getElementById('statusFilter');
-    const ownerFilter = document.getElementById('ownerFilter');
-    const sortCostBtn = document.getElementById('sortCostBtn');
-    const expandAllBtn = document.getElementById('expandAllBtn');
-    const collapseAllBtn = document.getElementById('collapseAllBtn');
-    const exportCsvBtn = document.getElementById('exportCsvBtn');
-    const exportJsonBtn = document.getElementById('exportJsonBtn');
-    const importJsonBtn = document.getElementById('importJsonBtn');
-    const jsonFile = document.getElementById('jsonFile');
-
+    const form = document.getElementById('clientForm');
+    const tableBody = document.querySelector('#clientTable tbody');
     const statusField = document.getElementById('status');
     const closedDetails = document.getElementById('closedDetails');
-    const leadOwner = document.getElementById('leadOwner');
-    const otherOwnerRow = document.getElementById('otherOwnerRow');
-    const otherOwnerInput = document.getElementById('otherOwner');
+    let clients = JSON.parse(localStorage.getItem('clients') || '[]');
 
-    // Helpers
-    function fmtDate(d){ if(!d) return ''; try{ const dt=new Date(d); return dt.toLocaleDateString(); }catch(e){return d} }
-    function fmtMoney(v){ return v === undefined || v === '' ? '' : '$' + Number(v).toFixed(2); }
-    function save(){ localStorage.setItem('clients', JSON.stringify(clients)); }
-
-    // UI toggles
-    toggleFormBtn.addEventListener('click', ()=>{ formSection.style.display = (formSection.style.display==='block')? 'none':'block'; if(formSection.style.display==='block') window.scrollTo({top:0,behavior:'smooth'}); });
-    cancelFormBtn.addEventListener('click', ()=>{ clientForm.reset(); formSection.style.display='none'; closedDetails.style.display='none'; otherOwnerRow.style.display='none'; });
-    function toggleClosedDetails(){ closedDetails.style.display = statusField.value === 'Closed' ? 'block' : 'none'; }
-    function toggleOtherOwner(){ otherOwnerRow.style.display = leadOwner.value === 'Other' ? 'block' : 'none';}
-
-    // Render function - main table shows only: name, phone, email, piano, lastContacted
-    function renderClients(){
-      const q = (searchInput.value||'').trim().toLowerCase();
-      const sf = statusFilter.value;
-      const of = ownerFilter.value;
-      const filtered = clients.filter(c=>{
-        if(sf && c.status !== sf) return false;
-        if(of && of !== 'Other'){ if(c.leadOwner !== of) return false; }
-        if(of === 'Other'){ if(['Ethan','Tristan','Dan'].includes(c.leadOwner)) return false; }
-        if(!q) return true;
-        return (c.name||'').toLowerCase().includes(q) || (c.piano||'').toLowerCase().includes(q) || (c.phone||'').toLowerCase().includes(q);
-      });
-
-      tbody.innerHTML='';
-      filtered.forEach((c, idx)=>{
-        const tr = document.createElement('tr'); tr.dataset.index = idx;
-        tr.innerHTML = `
-          <td style="font-weight:700">${escapeHtml(c.name||'—')}</td>
-          <td>${escapeHtml(c.phone||'—')}</td>
-          <td>${escapeHtml(c.email||'—')}</td>
-          <td>${escapeHtml(c.piano||'—')}</td>
-          <td>${escapeHtml(c.lastContacted ? new Date(c.lastContacted).toLocaleDateString() : '')}</td>
-          <td class="actions">
-            <button class="view" data-i="${idx}">View Details</button>
-            <button class="edit" data-i="${idx}">Edit</button>
-            <button class="delete" data-i="${idx}">Delete</button>
-          </td>`;
-        tbody.appendChild(tr);
-
-        const dtr = document.createElement('tr'); dtr.className='detail-row'; dtr.style.display='none';
-        const td = document.createElement('td'); td.colSpan = 6; td.innerHTML = detailCardHtml(c); td.className='detail-card-cell';
-        dtr.appendChild(td); tbody.appendChild(dtr);
-      });
-
-      // attach listeners on dynamic buttons
-      Array.from(document.querySelectorAll('.view')).forEach(b=> b.onclick = e => { const i = Number(b.dataset.i); toggleExpandRow(i); });
-      Array.from(document.querySelectorAll('.edit')).forEach(b=> b.onclick = e => { const i = Number(b.dataset.i); startEdit(i); });
-      Array.from(document.querySelectorAll('.delete')).forEach(b=> b.onclick = e => { const i = Number(b.dataset.i); confirmDelete(i); });
-      save();
-    }
-
-    function escapeHtml(s){ if(s===null||s===undefined) return ''; return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
-
-    function detailCardHtml(c){
-      const phone = c.phone||'—';
-      const email = c.email||'—';
-      const piano = c.piano||'—';
-      const notes = c.notes? escapeHtml(c.notes).replace(/\n/g,'<br>') : '—';
-      const owner = c.leadOwner||'—';
-      const cost = fmtMoney(c.cost);
-      const status = c.status||'New Lead';
-      const timeline = c.timeline||'—';
-      let closedHtml = '';
-      if(status === 'Closed' && c.closedDetails){
-        closedHtml = `<div style="margin-top:10px;border-top:1px dashed #e6edf7;padding-top:10px">
-          <div class="label">Closed Deal Details</div>
-          <div class="detail-item"><div class="label">Time of Sale</div><div class="value">${escapeHtml(c.closedDetails.timeOfSale||'—')}</div></div>
-          <div class="detail-item"><div class="label">Delivery Location</div><div class="value">${escapeHtml(c.closedDetails.deliveryLocation||'—')}</div></div>
-          <div class="detail-item"><div class="label">Stairs</div><div class="value">${escapeHtml(c.closedDetails.stairs||'—')}</div></div>
-          <div class="detail-item"><div class="label">Piano Sold</div><div class="value">${escapeHtml(c.closedDetails.pianoSold||'—')}</div></div>
-        </div>`;
-      }
-      return `<div class="detail-card">
-        <div class="detail-col">
-          <div class="detail-item"><div class="label">Phone</div><div class="value">${escapeHtml(phone)}</div></div>
-          <div class="detail-item"><div class="label">Email</div><div class="value">${escapeHtml(email)}</div></div>
-          <div class="detail-item"><div class="label">Piano</div><div class="value">${escapeHtml(piano)}</div></div>
-        </div>
-        <div class="detail-col">
-          <div class="detail-item"><div class="label">Lead Owner</div><div class="value">${escapeHtml(owner)}</div></div>
-          <div class="detail-item"><div class="label">Cost</div><div class="value">${escapeHtml(cost)}</div></div>
-          <div class="detail-item"><div class="label">Status</div><div class="value">${statusBadge(status)}</div></div>
-          <div class="detail-item"><div class="label">Timeline</div><div class="value">${escapeHtml(timeline)}</div></div>
-          <div class="detail-item"><div class="label">Notes</div><div class="value">${notes}</div></div>
-          ${closedHtml}
-        </div>
-      </div>`;
-    }
-
-    function statusBadge(s){ const map={'New Lead':'badge new','Working Deal':'badge working','Closed':'badge closed'}; return `<span class="${map[s]||'badge new'}">${escapeHtml(s)}</span>`; }
-
-    function toggleExpandRow(i){
-      const rows = Array.from(tbody.children);
-      const mainPos = i*2;
-      const detailRow = rows[mainPos+1];
-      if(!detailRow) return;
-      const isMobile = window.matchMedia('(max-width:860px)').matches;
-      detailRow.style.display = detailRow.style.display === (isMobile? 'block' : 'table-row') ? 'none' : (isMobile? 'block' : 'table-row');
-    }
-
-    expandAllBtn.addEventListener('click', ()=> Array.from(tbody.querySelectorAll('.detail-row')).forEach(r=> r.style.display = window.matchMedia('(max-width:860px)').matches ? 'block' : 'table-row'));
-    collapseAllBtn.addEventListener('click', ()=> Array.from(tbody.querySelectorAll('.detail-row')).forEach(r=> r.style.display = 'none'));
-
-    // --- Create / edit / delete ---
-    let editingIndex = null;
-    function startEdit(filteredIndex){
-      const filtered = getFilteredList();
-      const client = filtered[filteredIndex];
-      const idx = clients.findIndex(c => c._id === client._id);
-      if(idx === -1){ alert('Cannot find client'); return; }
-      editingIndex = idx;
-      populateForm(clients[idx]);
-      formSection.style.display = 'block';
-      window.scrollTo({top:0,behavior:'smooth'});
-    }
-
-    function populateForm(c){
-      document.getElementById('name').value = c.name||'';
-      document.getElementById('phone').value = c.phone||'';
-      document.getElementById('email').value = c.email||'';
-      document.getElementById('piano').value = c.piano||'';
-      document.getElementById('lastContacted').value = c.lastContacted||'';
-      document.getElementById('cost').value = c.cost||'';
-      document.getElementById('status').value = c.status||'New Lead';
-      document.getElementById('leadOwner').value = ['Ethan','Tristan','Dan'].includes(c.leadOwner)? c.leadOwner : 'Other';
-      if(document.getElementById('leadOwner').value === 'Other'){ otherOwnerRow.style.display='block'; otherOwnerInput.value = c.leadOwner||''; } else otherOwnerRow.style.display='none';
-      document.getElementById('timeline').value = c.timeline||'';
-      document.getElementById('notes').value = c.notes||'';
-      if(c.status === 'Closed' && c.closedDetails){ closedDetails.style.display='block'; document.getElementById('timeOfSale').value = c.closedDetails.timeOfSale||''; document.getElementById('deliveryLocation').value = c.closedDetails.deliveryLocation||''; document.getElementById('stairs').value = c.closedDetails.stairs||''; document.getElementById('inventoryLink').value = c.closedDetails.pianoSold||''; } else closedDetails.style.display='none';
-    }
-
-    function confirmDelete(filteredIndex){
-      const filtered = getFilteredList();
-      const client = filtered[filteredIndex];
-      const idx = clients.findIndex(c => c._id === client._id);
-      if(idx === -1) return;
-      if(confirm('Delete this client?')){ clients.splice(idx,1); save(); renderClients(); }
-    }
-
-    clientForm.addEventListener('submit', (e)=>{
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      if(!name) return alert('Name required');
-      let owner = document.getElementById('leadOwner').value === 'Other' ? (otherOwnerInput.value.trim()||'Other') : document.getElementById('leadOwner').value;
-      const obj = {
-        _id: editingIndex !== null ? clients[editingIndex]._id : 'id_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),
-        name,
-        phone: document.getElementById('phone').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        piano: document.getElementById('piano').value.trim(),
-        lastContacted: document.getElementById('lastContacted').value || '',
-        cost: document.getElementById('cost').value,
-        status: document.getElementById('status').value,
-        leadOwner: owner,
-        timeline: document.getElementById('timeline').value.trim(),
-        notes: document.getElementById('notes').value.trim(),
-        closedDetails: {}
-      };
-
-      if(obj.status === 'Closed'){
-        const ts = document.getElementById('timeOfSale').value;
-        const dl = document.getElementById('deliveryLocation').value.trim();
-        const st = document.getElementById('stairs').value;
-        const ps = document.getElementById('inventoryLink').value;
-        if(!ts || !dl || !st || !ps) return alert('When status = Closed, Time of Sale, Delivery Location, Stairs and Piano Sold are required.');
-        obj.closedDetails = { timeOfSale: ts, deliveryLocation: dl, stairs: st, pianoSold: ps };
-      }
-
-      if(editingIndex !== null){ clients[editingIndex] = obj; editingIndex = null; } else clients.push(obj);
-      clientForm.reset(); closedDetails.style.display='none'; otherOwnerRow.style.display='none'; formSection.style.display='none'; save(); renderClients();
+    statusField.addEventListener('change', () => {
+      closedDetails.style.display = statusField.value === 'Closed' ? 'block' : 'none';
     });
 
-    function getFilteredList(){
-      const q = (searchInput.value||'').trim().toLowerCase();
-      const sf = statusFilter.value;
-      const of = ownerFilter.value;
-      return clients.filter(c=>{
-        if(sf && c.status !== sf) return false;
-        if(of && of !== 'Other'){ if(c.leadOwner !== of) return false; }
-        if(of === 'Other'){ if(['Ethan','Tristan','Dan'].includes(c.leadOwner)) return false; }
-        if(!q) return true;
-        return (c.name||'').toLowerCase().includes(q) || (c.piano||'').toLowerCase().includes(q) || (c.phone||'').toLowerCase().includes(q);
+    function renderClients() {
+      tableBody.innerHTML = '';
+      clients.forEach((c, i) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${c.name}</td>
+          <td>${c.phone}</td>
+          <td>${c.email}</td>
+          <td>${c.piano}</td>
+          <td>${c.lastContacted}</td>
+          <td class="actions">
+            <button onclick="toggleExpand(${i})">Expand</button>
+            <button onclick="editClient(${i})">Edit</button>
+            <button class="delete" onclick="deleteClient(${i})">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+
+        const expandRow = document.createElement('tr');
+        expandRow.className = 'expandable';
+        expandRow.id = `expand-${i}`;
+        expandRow.innerHTML = `
+          <td colspan="6">
+            <strong>Status:</strong> ${c.status}<br>
+            <strong>Cost:</strong> ${c.cost}<br>
+            <strong>Lead Owner:</strong> ${c.leadOwner}<br>
+            <strong>Notes:</strong> ${c.notes}<br>
+            ${c.status === 'Closed' ? `
+              <strong>Time of Sale:</strong> ${c.timeOfSale}<br>
+              <strong>Delivery Location:</strong> ${c.deliveryLocation}<br>
+              <strong>Stairs:</strong> ${c.stairs}
+            ` : ''}
+          </td>
+        `;
+        tableBody.appendChild(expandRow);
       });
+      localStorage.setItem('clients', JSON.stringify(clients));
     }
 
-    // Sorting cost
-    let sortAsc = true;
-    sortCostBtn.addEventListener('click', ()=>{ sortCostBtn.dataset.active = sortCostBtn.dataset.active === 'true' ? 'false' : 'true'; sortAsc = !sortAsc; sortCostBtn.innerText = `Sort Cost ${sortAsc ? '↑' : '↓'}`; renderClients(); });
+    function toggleExpand(i) {
+      const expandRow = document.getElementById(`expand-${i}`);
+      expandRow.style.display = expandRow.style.display === 'table-row' ? 'none' : 'table-row';
+    }
 
-    // Export & import
-    function downloadFile(content, name, type='text/csv'){ const blob = new Blob([content], {type}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
-    exportCsvBtn.addEventListener('click', ()=>{ let csv='name,phone,email,piano,lastContacted,status,leadOwner,cost,timeline,notes,timeOfSale,deliveryLocation,stairs,pianoSold\n'; clients.forEach(c=>{ const cd=c.closedDetails||{}; csv+=`"${c.name}","${c.phone}","${c.email}","${c.piano}","${c.lastContacted||''}","${c.status||''}","${c.leadOwner||''}","${c.cost||''}","${(c.timeline||'').replace(/"/g,'""')}","${(c.notes||'').replace(/"/g,'""')}","${cd.timeOfSale||''}","${cd.deliveryLocation||''}","${cd.stairs||''}","${cd.pianoSold||''}"\n`; }); downloadFile(csv,'clients.csv','text/csv'); });
-    exportJsonBtn.addEventListener('click', ()=> downloadFile(JSON.stringify(clients,null,2),'clients.json','application/json'));
-    importJsonBtn.addEventListener('click', ()=> jsonFile.click());
-    jsonFile.addEventListener('change', (e)=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload = ev => { try{ const parsed = JSON.parse(ev.target.result); if(Array.isArray(parsed)){ clients = parsed; save(); renderClients(); alert('Imported'); } else alert('Invalid JSON (expected array)'); } catch(err){ alert('Invalid JSON file'); } }; r.readAsText(f); });
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const newClient = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        piano: document.getElementById('piano').value,
+        lastContacted: document.getElementById('lastContacted').value,
+        status: document.getElementById('status').value,
+        cost: document.getElementById('cost').value,
+        leadOwner: document.getElementById('leadOwner').value,
+        notes: document.getElementById('notes').value,
+        timeOfSale: document.getElementById('timeOfSale').value,
+        deliveryLocation: document.getElementById('deliveryLocation').value,
+        stairs: document.getElementById('stairs').value
+      };
+      clients.push(newClient);
+      renderClients();
+      form.reset();
+      closedDetails.style.display = 'none';
+    });
 
-    function confirmDelete(i){ const filtered = getFilteredList(); const client = filtered[i]; const idx = clients.findIndex(c=>c._id === client._id); if(idx===-1) return; if(confirm('Delete this client?')){ clients.splice(idx,1); save(); renderClients(); } }
+    function deleteClient(i) {
+      clients.splice(i, 1);
+      renderClients();
+    }
 
-    // Utility: ensure IDs
-    (function ensureIds(){ let changed=false; clients.forEach(c=>{ if(!c._id){ c._id='id_'+Date.now()+'_'+Math.random().toString(36).slice(2,8); changed=true }}); if(changed) save(); })();
+    function editClient(i) {
+      alert("Edit popup form coming soon — for now, delete and re-add.");
+    }
 
-    // initial render
     renderClients();
   </script>
 </body>
