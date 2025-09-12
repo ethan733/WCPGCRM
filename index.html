@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>World Class Piano Gallery CRM</title>
+  <title>Piano Gallery CRM</title>
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="logo.png">
   <style>
@@ -47,7 +47,7 @@
       margin-top: 10px;
       font-weight: bold;
     }
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 8px;
       margin-top: 4px;
@@ -106,12 +106,38 @@
     footer a:hover {
       text-decoration: underline;
     }
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+      header img {
+        margin-bottom: 10px;
+      }
+      form, .controls, .search-bar {
+        width: 100%;
+        padding: 15px;
+      }
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      button {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
     <img src="logo.png" alt="Piano Gallery Logo">
-    <h1>World Class Piano Gallery CRM</h1>
+    <h1>Piano Gallery CRM</h1>
   </header>
 
   <form id="clientForm">
@@ -121,6 +147,13 @@
     <label>Piano: <input type="text" id="piano"></label>
     <label>Time of Sale: <input type="datetime-local" id="timeOfSale"></label>
     <label>Timeline: <input type="text" id="timeline"></label>
+    <label>Status:
+      <select id="status">
+        <option value="New Lead">New Lead</option>
+        <option value="Working Deal">Working Deal</option>
+        <option value="Closed">Closed</option>
+      </select>
+    </label>
     <label>Notes: <textarea id="notes"></textarea></label>
     <button type="submit">Add Client</button>
   </form>
@@ -146,6 +179,7 @@
         <th>Piano</th>
         <th>Time of Sale</th>
         <th>Timeline</th>
+        <th>Status</th>
         <th>Notes</th>
         <th>Actions</th>
       </tr>
@@ -154,7 +188,7 @@
   </table>
 
   <footer>
-    <p>&copy; 2025 World Class Piano Gallery | CRM</p>
+    <p>&copy; 2025 Piano Gallery | Inventory</p>
   </footer>
 
   <script>
@@ -181,6 +215,7 @@
             <td>${c.piano}</td>
             <td>${c.timeOfSale}</td>
             <td>${c.timeline}</td>
+            <td>${c.status}</td>
             <td>${c.notes}</td>
             <td class="actions">
               <button onclick="editClient(${i})">Edit</button>
@@ -201,6 +236,7 @@
         piano: document.getElementById('piano').value,
         timeOfSale: document.getElementById('timeOfSale').value,
         timeline: document.getElementById('timeline').value,
+        status: document.getElementById('status').value,
         notes: document.getElementById('notes').value
       };
       clients.push(newClient);
@@ -221,15 +257,16 @@
       document.getElementById('piano').value = c.piano;
       document.getElementById('timeOfSale').value = c.timeOfSale;
       document.getElementById('timeline').value = c.timeline;
+      document.getElementById('status').value = c.status;
       document.getElementById('notes').value = c.notes;
       clients.splice(i, 1);
       renderClients(searchInput.value.toLowerCase());
     }
 
     function exportCSV() {
-      let csv = 'name,phone,email,piano,timeOfSale,timeline,notes\n';
+      let csv = 'name,phone,email,piano,timeOfSale,timeline,status,notes\n';
       clients.forEach(c => {
-        csv += `${c.name},${c.phone},${c.email},${c.piano},${c.timeOfSale},${c.timeline},${c.notes}\n`;
+        csv += `${c.name},${c.phone},${c.email},${c.piano},${c.timeOfSale},${c.timeline},${c.status},${c.notes}\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
