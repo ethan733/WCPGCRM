@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Piano Gallery CRM</title>
-  <link rel="icon" type="image/png" href="logo.png">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/favicon.png">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -40,19 +41,6 @@
       margin-left: auto;
       margin-right: auto;
     }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
     button {
       margin-top: 15px;
       padding: 10px 16px;
@@ -63,9 +51,7 @@
       font-size: 15px;
       cursor: pointer;
     }
-    button:hover {
-      background: #2980b9;
-    }
+    button:hover { background: #2980b9; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -83,51 +69,8 @@
       background: #3498db;
       color: #fff;
     }
-    .actions button {
-      margin-right: 5px;
-      background: #2ecc71;
-    }
-    .actions button.delete {
-      background: #e74c3c;
-    }
-    footer {
-      text-align: center;
-      margin-top: 30px;
-      padding: 20px;
-      background: #2c3e50;
-      color: #fff;
-      border-radius: 10px 10px 0 0;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 90%;
-      overflow-y: auto;
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .close {
-      font-size: 20px;
-      cursor: pointer;
-      font-weight: bold;
-      color: #333;
-    }
+    .actions button { background: #2ecc71; }
+    .actions button.delete { background: #e74c3c; }
     .expand-row {
       background: #f9f9f9;
       display: none;
@@ -138,11 +81,18 @@
       font-size: 14px;
       color: #555;
     }
+    .expand-toggle {
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 5px;
+      color: #3498db;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Piano Gallery Logo">
+    <img src="assets/logo.png" alt="Piano Gallery Logo">
     <h1>Piano Gallery CRM</h1>
   </header>
 
@@ -171,14 +121,11 @@
         </select>
       </label>
       <label>Notes: <textarea id="notes"></textarea></label>
-
-      <!-- Closed-only fields -->
       <div id="closedFields" style="display:none;">
         <label>Time of Sale: <input type="datetime-local" id="timeOfSale"></label>
         <label>Delivery Location: <input type="text" id="deliveryLocation"></label>
         <label>Number of Stairs: <input type="number" id="stairs"></label>
       </div>
-
       <button type="submit">Add Lead</button>
     </form>
   </div>
@@ -187,6 +134,7 @@
     <table id="clientTable">
       <thead>
         <tr>
+          <th></th>
           <th>Name</th>
           <th>Phone</th>
           <th>Email</th>
@@ -199,17 +147,6 @@
     </table>
   </div>
 
-  <!-- Edit Modal -->
-  <div class="modal" id="editModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Edit Lead</h2>
-        <span class="close" onclick="closeModal()">&times;</span>
-      </div>
-      <form id="editForm"></form>
-    </div>
-  </div>
-
   <footer>
     <p>&copy; 2025 Piano Gallery | CRM</p>
   </footer>
@@ -219,10 +156,6 @@
     const tableBody = document.querySelector('#clientTable tbody');
     const statusSelect = document.getElementById('status');
     const closedFields = document.getElementById('closedFields');
-    const editModal = document.getElementById('editModal');
-    const editForm = document.getElementById('editForm');
-    let editIndex = null;
-
     let clients = JSON.parse(localStorage.getItem('clients') || '[]');
 
     function toggleForm() {
@@ -238,7 +171,8 @@
       clients.forEach((c, i) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td onclick="toggleExpand(${i})" style="cursor:pointer;">${c.name}</td>
+          <td class="expand-toggle" onclick="toggleExpand(${i})">➕</td>
+          <td>${c.name}</td>
           <td>${c.phone}</td>
           <td>${c.email}</td>
           <td>${c.piano}</td>
@@ -250,12 +184,11 @@
         `;
         tableBody.appendChild(row);
 
-        // Expandable row
         const expandRow = document.createElement('tr');
         expandRow.classList.add('expand-row');
         expandRow.id = `expand-${i}`;
         expandRow.innerHTML = `
-          <td colspan="6" class="expand-cell">
+          <td colspan="7" class="expand-cell">
             <strong>Status:</strong> ${c.status || ''}<br>
             <strong>Cost:</strong> ${c.cost || ''}<br>
             <strong>Lead Owner:</strong> ${c.leadOwner || ''}<br>
@@ -270,6 +203,27 @@
         tableBody.appendChild(expandRow);
       });
       localStorage.setItem('clients', JSON.stringify(clients));
+    }
+
+    function toggleExpand(i) {
+      const row = document.getElementById(`expand-${i}`);
+      const toggle = row.previousElementSibling.querySelector('.expand-toggle');
+      if (row.style.display === 'table-row') {
+        row.style.display = 'none';
+        toggle.textContent = '➕';
+      } else {
+        row.style.display = 'table-row';
+        toggle.textContent = '➖';
+      }
+    }
+
+    function deleteClient(i) {
+      clients.splice(i, 1);
+      renderClients();
+    }
+
+    function openEdit(i) {
+      alert("Edit modal coming soon!");
     }
 
     form.addEventListener('submit', e => {
@@ -293,88 +247,6 @@
       form.reset();
       form.style.display = 'none';
     });
-
-    function deleteClient(i) {
-      clients.splice(i, 1);
-      renderClients();
-    }
-
-    function toggleExpand(i) {
-      const row = document.getElementById(`expand-${i}`);
-      if (row.style.display === 'table-row') {
-        row.style.display = 'none';
-      } else {
-        row.style.display = 'table-row';
-      }
-    }
-
-    function openEdit(i) {
-      editIndex = i;
-      const c = clients[i];
-      editForm.innerHTML = `
-        <label>Name: <input type="text" id="editName" value="${c.name}" required></label>
-        <label>Phone Number: <input type="text" id="editPhone" value="${c.phone}"></label>
-        <label>Email: <input type="email" id="editEmail" value="${c.email}"></label>
-        <label>Piano: <input type="text" id="editPiano" value="${c.piano}"></label>
-        <label>Last Contacted: <input type="date" id="editLastContacted" value="${c.lastContacted || ''}"></label>
-        <label>Status:
-          <select id="editStatus">
-            <option ${c.status==='New Lead'?'selected':''}>New Lead</option>
-            <option ${c.status==='Working Deal'?'selected':''}>Working Deal</option>
-            <option ${c.status==='Closed'?'selected':''}>Closed</option>
-          </select>
-        </label>
-        <label>Cost ($): <input type="number" id="editCost" step="0.01" value="${c.cost||''}"></label>
-        <label>Lead Owner:
-          <select id="editLeadOwner">
-            <option ${c.leadOwner==='Me'?'selected':''}>Me</option>
-            <option ${c.leadOwner==='Tristan'?'selected':''}>Tristan</option>
-            <option ${c.leadOwner==='Dan'?'selected':''}>Dan</option>
-            <option ${c.leadOwner==='Other'?'selected':''}>Other</option>
-          </select>
-        </label>
-        <label>Notes: <textarea id="editNotes">${c.notes||''}</textarea></label>
-        <div id="editClosedFields" style="display:${c.status==='Closed'?'block':'none'};">
-          <label>Time of Sale: <input type="datetime-local" id="editTimeOfSale" value="${c.timeOfSale||''}"></label>
-          <label>Delivery Location: <input type="text" id="editDeliveryLocation" value="${c.deliveryLocation||''}"></label>
-          <label>Number of Stairs: <input type="number" id="editStairs" value="${c.stairs||''}"></label>
-        </div>
-        <button type="button" onclick="saveEdit()">Save Changes</button>
-      `;
-      editModal.style.display = 'flex';
-      document.getElementById('editStatus').addEventListener('change', e => {
-        document.getElementById('editClosedFields').style.display = e.target.value === 'Closed' ? 'block' : 'none';
-      });
-    }
-
-    function closeModal() {
-      editModal.style.display = 'none';
-    }
-
-    function saveEdit() {
-      if (editIndex === null) return;
-      const c = clients[editIndex];
-      c.name = document.getElementById('editName').value;
-      c.phone = document.getElementById('editPhone').value;
-      c.email = document.getElementById('editEmail').value;
-      c.piano = document.getElementById('editPiano').value;
-      c.lastContacted = document.getElementById('editLastContacted').value;
-      c.status = document.getElementById('editStatus').value;
-      c.cost = document.getElementById('editCost').value;
-      c.leadOwner = document.getElementById('editLeadOwner').value;
-      c.notes = document.getElementById('editNotes').value;
-      if (c.status === 'Closed') {
-        c.timeOfSale = document.getElementById('editTimeOfSale').value;
-        c.deliveryLocation = document.getElementById('editDeliveryLocation').value;
-        c.stairs = document.getElementById('editStairs').value;
-      } else {
-        c.timeOfSale = '';
-        c.deliveryLocation = '';
-        c.stairs = '';
-      }
-      renderClients();
-      closeModal();
-    }
 
     renderClients();
   </script>
