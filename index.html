@@ -3,307 +3,337 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>World Class Piano Gallery CRM</title>
+  <title>Piano Gallery CRM</title>
+  <link rel="icon" type="image/png" href="logo.png">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f6f8;
+      background-color: #f8f9fc;
       margin: 0;
-      padding: 0;
+      padding: 20px;
+      color: #333;
     }
     header {
-      background: #1a1a2e;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    .dashboard {
       display: flex;
-      justify-content: space-around;
-      padding: 1rem;
+      align-items: center;
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+      border-radius: 0 0 10px 10px;
+      margin-bottom: 30px;
+    }
+    header img {
+      height: 60px;
+      margin-right: 15px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
     }
     .card {
-      background: white;
-      padding: 1rem;
+      background: #fff;
       border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      flex: 1;
-      margin: 0 0.5rem;
-      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 20px;
+      margin-bottom: 20px;
     }
-    .filter-bar {
-      background: white;
-      padding: 1rem;
-      margin: 1rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    .dropdown-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
     }
-    .table-container {
-      margin: 1rem;
-      overflow-x: auto;
+    .dropdown-btn:hover { background: #2980b9; }
+    .form-container { display: none; margin-top: 15px; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, textarea, select {
+      width: 100%; padding: 8px; margin-top: 4px;
+      border: 1px solid #ccc; border-radius: 6px; font-size: 14px;
     }
+    button { cursor: pointer; }
     table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 10px;
+      width: 100%; border-collapse: collapse;
+      background: #fff; border-radius: 10px;
       overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     th, td {
-      padding: 0.75rem;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
+      padding: 12px; border-bottom: 1px solid #ddd; text-align: left;
     }
-    tr:hover {
-      background: #f1f1f1;
+    th { background: #3498db; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .actions button {
+      margin-right: 5px; padding: 6px 12px;
+      border: none; border-radius: 6px; color: #fff;
     }
-    .status {
-      padding: 0.3rem 0.6rem;
-      border-radius: 5px;
-      color: white;
-      font-size: 0.8rem;
+    .actions button.edit { background: #f39c12; }
+    .actions button.delete { background: #e74c3c; }
+    .actions button.view { background: #2ecc71; }
+    .details-row { display: none; background: #f4f6f9; }
+    .details { padding: 15px; }
+    .status-badge {
+      padding: 4px 8px; border-radius: 6px; font-size: 12px; color: #fff;
     }
-    .status.New { background: #007bff; }
-    .status.Working { background: #ff9800; }
-    .status.Closed { background: #4caf50; }
-    button {
-      padding: 0.4rem 0.8rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin: 0 2px;
-    }
-    button.edit { background: #2196f3; color: white; }
-    button.delete { background: #f44336; color: white; }
-    button.expand { background: #9c27b0; color: white; }
-    .hidden { display: none; }
-    .expandable {
-      background: #fafafa;
-      padding: 1rem;
-    }
-    /* Modal styles */
+    .status-new { background: #3498db; }
+    .status-working { background: #e67e22; }
+    .status-closed { background: #27ae60; }
+    /* Modal */
     .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
+      display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+      width: 100%; height: 100%; overflow: auto;
+      background: rgba(0,0,0,0.6); padding-top: 60px;
     }
     .modal-content {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
+      background: #fff; margin: auto; padding: 20px;
+      border-radius: 10px; width: 90%; max-width: 600px;
     }
-    .modal-header {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-    .modal-content label {
-      display: block;
-      margin: 0.5rem 0 0.2rem;
-    }
-    .modal-content input, .modal-content select, .modal-content textarea {
-      width: 100%;
-      padding: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-    .modal-actions {
-      text-align: right;
-    }
-    .modal-actions button {
-      margin-left: 0.5rem;
-    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; }
+    .close { color: #aaa; font-size: 24px; cursor: pointer; }
+    .close:hover { color: #000; }
   </style>
 </head>
 <body>
   <header>
-    <h1>World Class Piano Gallery CRM</h1>
+    <img src="logo.png" alt="Logo">
+    <h1>Piano Gallery CRM</h1>
   </header>
 
-  <div class="dashboard">
-    <div class="card">Total Leads: <span id="stat-leads">0</span></div>
-    <div class="card">Working Deals: <span id="stat-working">0</span></div>
-    <div class="card">Closed Deals: <span id="stat-closed">0</span></div>
-    <div class="card">Total Revenue: $<span id="stat-revenue">0</span></div>
-  </div>
-
-  <div class="filter-bar">
-    <label>Status:
-      <select id="filter-status">
-        <option value="">All</option>
-        <option value="New">New Lead</option>
-        <option value="Working">Working Deal</option>
-        <option value="Closed">Closed</option>
-      </select>
-    </label>
-    <label>Lead Owner:
-      <select id="filter-owner">
-        <option value="">All</option>
-        <option value="Ethan">Ethan</option>
-        <option value="Tristan">Tristan</option>
-        <option value="Dan">Dan</option>
-        <option value="Other">Other</option>
-      </select>
-    </label>
-  </div>
-
-  <div class="table-container">
-    <table id="clientTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Email</th>
-          <th>Piano</th>
-          <th>Last Contacted</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Modal for Editing -->
-  <div id="editModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">Edit Client</div>
-      <form id="editForm">
-        <label>Name: <input type="text" id="edit-name"></label>
-        <label>Phone: <input type="text" id="edit-phone"></label>
-        <label>Email: <input type="email" id="edit-email"></label>
-        <label>Piano: <input type="text" id="edit-piano"></label>
-        <label>Last Contacted: <input type="date" id="edit-contacted"></label>
+  <div class="card">
+    <button class="dropdown-btn" onclick="toggleForm()">+ Add Client</button>
+    <div class="form-container" id="formContainer">
+      <form id="clientForm">
+        <label>Name: <input type="text" id="name" required></label>
+        <label>Phone: <input type="text" id="phone"></label>
+        <label>Email: <input type="email" id="email"></label>
+        <label>Piano: <input type="text" id="piano"></label>
+        <label>Last Contacted: <input type="date" id="lastContacted"></label>
         <label>Status:
-          <select id="edit-status">
-            <option value="New">New Lead</option>
-            <option value="Working">Working Deal</option>
+          <select id="status">
+            <option value="New Lead">New Lead</option>
+            <option value="Working Deal">Working Deal</option>
             <option value="Closed">Closed</option>
           </select>
         </label>
         <label>Lead Owner:
-          <select id="edit-owner">
+          <select id="owner">
             <option value="Ethan">Ethan</option>
             <option value="Tristan">Tristan</option>
             <option value="Dan">Dan</option>
             <option value="Other">Other</option>
           </select>
         </label>
-        <label>Cost: <input type="number" id="edit-cost"></label>
-        <label>Notes: <textarea id="edit-notes"></textarea></label>
-        <label>Timeline: <input type="text" id="edit-timeline"></label>
-        <div id="closedFields" class="hidden">
-          <label>Time of Sale: <input type="date" id="edit-sale"></label>
-          <label>Delivery Location: <input type="text" id="edit-delivery"></label>
-          <label>Number of Stairs: <input type="number" id="edit-stairs"></label>
+        <label>Cost: <input type="number" id="cost" step="0.01"></label>
+        <label>Timeline: <input type="text" id="timeline"></label>
+        <label>Notes: <textarea id="notes"></textarea></label>
+        <div id="closedFields" style="display:none;">
+          <label>Time of Sale: <input type="datetime-local" id="timeOfSale"></label>
+          <label>Delivery Location: <input type="text" id="deliveryLocation"></label>
+          <label>Number of Stairs: <input type="number" id="stairs"></label>
+          <label>Piano Sold: <input type="text" id="pianoSold"></label>
         </div>
-        <div class="modal-actions">
-          <button type="button" onclick="closeModal()">Cancel</button>
-          <button type="submit">Save</button>
-        </div>
+        <button type="submit">Save Client</button>
       </form>
     </div>
   </div>
 
-  <script>
-    const clientTable = document.getElementById("clientTable").querySelector("tbody");
-    const editModal = document.getElementById("editModal");
-    let editingRow = null;
+  <table id="clientTable">
+    <thead>
+      <tr>
+        <th>Name</th><th>Phone</th><th>Email</th><th>Piano</th><th>Last Contacted</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-    function addClient(client) {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${client.name}</td>
-        <td>${client.phone}</td>
-        <td>${client.email}</td>
-        <td>${client.piano}</td>
-        <td>${client.lastContacted}</td>
-        <td>
-          <button class="edit" onclick="openEditModal(this)">Edit</button>
-          <button class="delete" onclick="this.closest('tr').remove()">Delete</button>
-        </td>
-      `;
-      row.dataset.details = JSON.stringify(client);
-      clientTable.appendChild(row);
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Client</h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <form id="editForm"></form>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('clientForm');
+    const tableBody = document.querySelector('#clientTable tbody');
+    const statusField = document.getElementById('status');
+    const closedFields = document.getElementById('closedFields');
+    let clients = JSON.parse(localStorage.getItem('clients') || '[]');
+    let editingIndex = null;
+
+    function toggleForm() {
+      const container = document.getElementById('formContainer');
+      container.style.display = container.style.display === 'none' || container.style.display === '' ? 'block' : 'none';
     }
 
-    function openEditModal(button) {
-      editingRow = button.closest("tr");
-      const client = JSON.parse(editingRow.dataset.details);
-      document.getElementById("edit-name").value = client.name;
-      document.getElementById("edit-phone").value = client.phone;
-      document.getElementById("edit-email").value = client.email;
-      document.getElementById("edit-piano").value = client.piano;
-      document.getElementById("edit-contacted").value = client.lastContacted;
-      document.getElementById("edit-status").value = client.status;
-      document.getElementById("edit-owner").value = client.owner;
-      document.getElementById("edit-cost").value = client.cost;
-      document.getElementById("edit-notes").value = client.notes;
-      document.getElementById("edit-timeline").value = client.timeline;
-      document.getElementById("edit-sale").value = client.sale || "";
-      document.getElementById("edit-delivery").value = client.delivery || "";
-      document.getElementById("edit-stairs").value = client.stairs || "";
-      toggleClosedFields();
-      editModal.style.display = "flex";
+    statusField.addEventListener('change', () => {
+      closedFields.style.display = statusField.value === 'Closed' ? 'block' : 'none';
+    });
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const newClient = getFormData();
+      clients.push(newClient);
+      saveAndRender();
+      form.reset();
+      closedFields.style.display = 'none';
+    });
+
+    function getFormData() {
+      return {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        piano: document.getElementById('piano').value,
+        lastContacted: document.getElementById('lastContacted').value,
+        status: document.getElementById('status').value,
+        owner: document.getElementById('owner').value,
+        cost: document.getElementById('cost').value,
+        timeline: document.getElementById('timeline').value,
+        notes: document.getElementById('notes').value,
+        timeOfSale: document.getElementById('timeOfSale').value,
+        deliveryLocation: document.getElementById('deliveryLocation').value,
+        stairs: document.getElementById('stairs').value,
+        pianoSold: document.getElementById('pianoSold').value
+      };
+    }
+
+    function saveAndRender() {
+      localStorage.setItem('clients', JSON.stringify(clients));
+      renderClients();
+    }
+
+    function renderClients() {
+      tableBody.innerHTML = '';
+      clients.forEach((c, i) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${c.name}</td>
+          <td>${c.phone}</td>
+          <td>${c.email}</td>
+          <td>${c.piano}</td>
+          <td>${c.lastContacted || ''}</td>
+          <td class="actions">
+            <button class="view" onclick="toggleDetails(${i})">View</button>
+            <button class="edit" onclick="openEdit(${i})">Edit</button>
+            <button class="delete" onclick="deleteClient(${i})">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+        // Details row
+        const detailsRow = document.createElement('tr');
+        detailsRow.classList.add('details-row');
+        detailsRow.id = 'details-' + i;
+        detailsRow.innerHTML = `
+          <td colspan="6">
+            <div class="details">
+              <p><strong>Status:</strong> <span class="status-badge ${statusClass(c.status)}">${c.status || ''}</span></p>
+              <p><strong>Owner:</strong> ${c.owner || ''}</p>
+              <p><strong>Cost:</strong> ${c.cost || ''}</p>
+              <p><strong>Timeline:</strong> ${c.timeline || ''}</p>
+              <p><strong>Notes:</strong> ${c.notes || ''}</p>
+              ${c.status === 'Closed' ? `
+                <p><strong>Time of Sale:</strong> ${c.timeOfSale || ''}</p>
+                <p><strong>Delivery Location:</strong> ${c.deliveryLocation || ''}</p>
+                <p><strong>Stairs:</strong> ${c.stairs || ''}</p>
+                <p><strong>Piano Sold:</strong> ${c.pianoSold || ''}</p>
+              ` : ''}
+            </div>
+          </td>
+        `;
+        tableBody.appendChild(detailsRow);
+      });
+    }
+
+    function statusClass(status) {
+      if (status === 'Working Deal') return 'status-working';
+      if (status === 'Closed') return 'status-closed';
+      return 'status-new';
+    }
+
+    function toggleDetails(i) {
+      const details = document.getElementById('details-' + i);
+      details.style.display = details.style.display === 'table-row' ? 'none' : 'table-row';
+    }
+
+    function deleteClient(i) {
+      clients.splice(i, 1);
+      saveAndRender();
+    }
+
+    function openEdit(i) {
+      editingIndex = i;
+      const c = clients[i];
+      const formHtml = `
+        <label>Name: <input type="text" id="editName" value="${c.name || ''}"></label>
+        <label>Phone: <input type="text" id="editPhone" value="${c.phone || ''}"></label>
+        <label>Email: <input type="email" id="editEmail" value="${c.email || ''}"></label>
+        <label>Piano: <input type="text" id="editPiano" value="${c.piano || ''}"></label>
+        <label>Last Contacted: <input type="date" id="editLastContacted" value="${c.lastContacted || ''}"></label>
+        <label>Status:
+          <select id="editStatus">
+            <option ${c.status==='New Lead'?'selected':''}>New Lead</option>
+            <option ${c.status==='Working Deal'?'selected':''}>Working Deal</option>
+            <option ${c.status==='Closed'?'selected':''}>Closed</option>
+          </select>
+        </label>
+        <label>Owner:
+          <select id="editOwner">
+            <option ${c.owner==='Ethan'?'selected':''}>Ethan</option>
+            <option ${c.owner==='Tristan'?'selected':''}>Tristan</option>
+            <option ${c.owner==='Dan'?'selected':''}>Dan</option>
+            <option ${c.owner==='Other'?'selected':''}>Other</option>
+          </select>
+        </label>
+        <label>Cost: <input type="number" id="editCost" step="0.01" value="${c.cost || ''}"></label>
+        <label>Timeline: <input type="text" id="editTimeline" value="${c.timeline || ''}"></label>
+        <label>Notes: <textarea id="editNotes">${c.notes || ''}</textarea></label>
+        <div id="editClosedFields" ${c.status==='Closed'?'':'style="display:none;"'}>
+          <label>Time of Sale: <input type="datetime-local" id="editTimeOfSale" value="${c.timeOfSale || ''}"></label>
+          <label>Delivery Location: <input type="text" id="editDeliveryLocation" value="${c.deliveryLocation || ''}"></label>
+          <label>Stairs: <input type="number" id="editStairs" value="${c.stairs || ''}"></label>
+          <label>Piano Sold: <input type="text" id="editPianoSold" value="${c.pianoSold || ''}"></label>
+        </div>
+        <button type="button" onclick="saveEdit()">Save</button>
+      `;
+      document.getElementById('editForm').innerHTML = formHtml;
+      document.getElementById('editStatus').addEventListener('change', e => {
+        document.getElementById('editClosedFields').style.display = e.target.value === 'Closed' ? 'block' : 'none';
+      });
+      document.getElementById('editModal').style.display = 'block';
     }
 
     function closeModal() {
-      editModal.style.display = "none";
+      document.getElementById('editModal').style.display = 'none';
     }
 
-    document.getElementById("editForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      if (!editingRow) return;
-      const client = {
-        name: document.getElementById("edit-name").value,
-        phone: document.getElementById("edit-phone").value,
-        email: document.getElementById("edit-email").value,
-        piano: document.getElementById("edit-piano").value,
-        lastContacted: document.getElementById("edit-contacted").value,
-        status: document.getElementById("edit-status").value,
-        owner: document.getElementById("edit-owner").value,
-        cost: document.getElementById("edit-cost").value,
-        notes: document.getElementById("edit-notes").value,
-        timeline: document.getElementById("edit-timeline").value,
-        sale: document.getElementById("edit-sale").value,
-        delivery: document.getElementById("edit-delivery").value,
-        stairs: document.getElementById("edit-stairs").value
-      };
-      editingRow.cells[0].innerText = client.name;
-      editingRow.cells[1].innerText = client.phone;
-      editingRow.cells[2].innerText = client.email;
-      editingRow.cells[3].innerText = client.piano;
-      editingRow.cells[4].innerText = client.lastContacted;
-      editingRow.dataset.details = JSON.stringify(client);
+    function saveEdit() {
+      const c = clients[editingIndex];
+      c.name = document.getElementById('editName').value;
+      c.phone = document.getElementById('editPhone').value;
+      c.email = document.getElementById('editEmail').value;
+      c.piano = document.getElementById('editPiano').value;
+      c.lastContacted = document.getElementById('editLastContacted').value;
+      c.status = document.getElementById('editStatus').value;
+      c.owner = document.getElementById('editOwner').value;
+      c.cost = document.getElementById('editCost').value;
+      c.timeline = document.getElementById('editTimeline').value;
+      c.notes = document.getElementById('editNotes').value;
+      c.timeOfSale = document.getElementById('editTimeOfSale').value;
+      c.deliveryLocation = document.getElementById('editDeliveryLocation').value;
+      c.stairs = document.getElementById('editStairs').value;
+      c.pianoSold = document.getElementById('editPianoSold').value;
+      saveAndRender();
       closeModal();
-    });
-
-    document.getElementById("edit-status").addEventListener("change", toggleClosedFields);
-    function toggleClosedFields() {
-      const status = document.getElementById("edit-status").value;
-      document.getElementById("closedFields").classList.toggle("hidden", status !== "Closed");
     }
 
-    // Demo client
-    addClient({
-      name: "John Doe",
-      phone: "123-456-7890",
-      email: "john@example.com",
-      piano: "Yamaha U1",
-      lastContacted: "2025-09-01",
-      status: "New",
-      owner: "Ethan",
-      cost: 5000,
-      notes: "Interested in financing",
-      timeline: "2 weeks",
-      sale: "",
-      delivery: "",
-      stairs: ""
-    });
+    renderClients();
   </script>
 </body>
 </html>
