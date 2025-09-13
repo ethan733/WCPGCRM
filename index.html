@@ -2,65 +2,188 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>World Class Piano Gallery CRM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Piano Gallery CRM</title>
+  <link rel="icon" type="image/png" href="logo.png">
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
-    header { background: #333; color: #fff; padding: 1rem; display: flex; align-items: center; }
-    header img { height: 40px; margin-right: 10px; }
-    header h1 { font-size: 1.5rem; margin: 0; }
-    .container { padding: 20px; }
-
-    /* Filter panel */
-    .filter-panel { display: none; margin-bottom: 15px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
-    .filter-panel input, .filter-panel select { padding: 5px; width: 100%; }
-
-    .btn { background: #333; color: #fff; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
-    .btn:hover { background: #555; }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-    th { background: #f4f4f4; }
-    tr.expandable-content { display: none; background: #fafafa; }
-
-    /* Modal */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-    .modal-content { background: #fff; padding: 20px; margin: 10% auto; width: 90%; max-width: 500px; border-radius: 8px; }
-    .close { float: right; cursor: pointer; font-size: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+      border-radius: 0 0 10px 10px;
+      margin-bottom: 30px;
+    }
+    header img {
+      height: 60px;
+      margin-right: 15px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      margin-bottom: 20px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #3498db;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover { background: #2980b9; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th { background: #3498db; color: #fff; }
+    .actions button { margin-right: 5px; background: #2ecc71; }
+    .actions button.delete { background: #e74c3c; }
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background: #2c3e50;
+      color: #fff;
+      border-radius: 10px 10px 0 0;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90%;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .close { font-size: 20px; cursor: pointer; font-weight: bold; color: #333; }
+    .expand-row { background: #f9f9f9; display: none; }
+    .expand-cell { padding: 10px; border-top: none; font-size: 14px; color: #555; }
+    .filter-panel { display: none; margin-bottom: 20px; }
+    .filter-grid { display: flex; flex-wrap: wrap; gap: 15px; }
+    .filter-grid label { flex: 1 1 200px; }
+    @media(max-width: 600px) { .filter-grid { flex-direction: column; } }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Logo">
-    <h1>World Class Piano Gallery CRM</h1>
+    <img src="logo.png" alt="Piano Gallery Logo">
+    <h1>Piano Gallery CRM</h1>
   </header>
 
-  <div class="container">
-    <button class="btn" onclick="toggleFilterPanel()">Show Filters</button>
+  <!-- Filter Panel -->
+  <div class="card">
+    <button onclick="toggleFilters()">🔍 Filters</button>
     <div id="filterPanel" class="filter-panel">
       <div class="filter-grid">
-        <input type="text" id="searchInput" placeholder="Search name, phone, email, piano">
-        <select id="statusFilter">
-          <option value="">All Statuses</option>
+        <label>Status:
+          <select id="filterStatus">
+            <option value="">All</option>
+            <option>New Lead</option>
+            <option>Working Deal</option>
+            <option>Closed</option>
+          </select>
+        </label>
+        <label>Lead Owner:
+          <select id="filterOwner">
+            <option value="">All</option>
+            <option>Me</option>
+            <option>Tristan</option>
+            <option>Dan</option>
+            <option>Josh</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <label>From: <input type="date" id="filterFrom"></label>
+        <label>To: <input type="date" id="filterTo"></label>
+      </div>
+      <button onclick="applyFilters()">Apply</button>
+      <button onclick="clearFilters()">Clear</button>
+    </div>
+  </div>
+
+  <!-- Add Lead Form -->
+  <div class="card">
+    <button onclick="toggleForm()">+ Add New Lead</button>
+    <form id="clientForm" style="display:none; margin-top:15px;">
+      <label>Name: <input type="text" id="name" required></label>
+      <label>Phone Number: <input type="text" id="phone"></label>
+      <label>Email: <input type="email" id="email"></label>
+      <label>Piano: <input type="text" id="piano"></label>
+      <label>Last Contacted: <input type="date" id="lastContacted"></label>
+      <label>Status:
+        <select id="status">
           <option>New Lead</option>
           <option>Working Deal</option>
           <option>Closed</option>
         </select>
-        <select id="ownerFilter">
-          <option value="">All Owners</option>
-          <option>Ethan</option>
+      </label>
+      <label>Cost ($): <input type="number" id="cost" step="0.01"></label>
+      <label>Lead Owner:
+        <select id="leadOwner">
+          <option>Me</option>
           <option>Tristan</option>
           <option>Dan</option>
           <option>Josh</option>
           <option>Other</option>
         </select>
-        <input type="date" id="fromDate">
-        <input type="date" id="toDate">
+      </label>
+      <label>Notes: <textarea id="notes"></textarea></label>
+      <div id="closedFields" style="display:none;">
+        <label>Time of Sale: <input type="datetime-local" id="timeOfSale"></label>
+        <label>Delivery Location: <input type="text" id="deliveryLocation"></label>
+        <label>Number of Stairs: <input type="number" id="stairs"></label>
       </div>
-    </div>
+      <button type="submit">Add Lead</button>
+    </form>
+  </div>
 
-    <table id="crmTable">
+  <!-- Client Table -->
+  <div class="card">
+    <table id="clientTable">
       <thead>
         <tr>
           <th>Name</th>
@@ -71,139 +194,209 @@
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody id="tableBody"></tbody>
+      <tbody></tbody>
     </table>
   </div>
 
   <!-- Edit Modal -->
-  <div id="editModal" class="modal">
+  <div class="modal" id="editModal">
     <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2>Edit Lead</h2>
+      <div class="modal-header">
+        <h2>Edit Lead</h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
       <form id="editForm"></form>
-      <button class="btn" onclick="saveEdit()">Save</button>
     </div>
   </div>
 
+  <footer><p>&copy; 2025 Piano Gallery | CRM</p></footer>
+
   <script>
-    let leads = JSON.parse(localStorage.getItem('crmLeads')) || [];
+    const form = document.getElementById('clientForm');
+    const tableBody = document.querySelector('#clientTable tbody');
+    const statusSelect = document.getElementById('status');
+    const closedFields = document.getElementById('closedFields');
+    const editModal = document.getElementById('editModal');
+    const editForm = document.getElementById('editForm');
     let editIndex = null;
 
-    function toggleFilterPanel() {
-      const panel = document.getElementById("filterPanel");
-      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    // Load clients (check both keys)
+    let clients = JSON.parse(localStorage.getItem('clients') || 'null')
+      || JSON.parse(localStorage.getItem('crmLeads') || '[]');
+
+    function saveClients() {
+      localStorage.setItem('clients', JSON.stringify(clients));
     }
 
-    function renderTable() {
-      const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = '';
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      const statusFilter = document.getElementById('statusFilter').value;
-      const ownerFilter = document.getElementById('ownerFilter').value;
-      const fromDate = document.getElementById('fromDate').value;
-      const toDate = document.getElementById('toDate').value;
+    function toggleForm() {
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+    function toggleFilters() {
+      const panel = document.getElementById('filterPanel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
 
-      leads.forEach((lead, i) => {
-        // Apply filters
-        if (search && !(`${lead.name} ${lead.phone} ${lead.email} ${lead.piano}`.toLowerCase().includes(search))) return;
-        if (statusFilter && lead.status !== statusFilter) return;
-        if (ownerFilter && lead.owner !== ownerFilter) return;
-        if (fromDate && (!lead.lastContacted || new Date(lead.lastContacted) < new Date(fromDate))) return;
-        if (toDate && (!lead.lastContacted || new Date(lead.lastContacted) > new Date(toDate))) return;
+    statusSelect.addEventListener('change', () => {
+      closedFields.style.display = statusSelect.value === 'Closed' ? 'block' : 'none';
+    });
 
+    function renderClients(filtered = clients) {
+      tableBody.innerHTML = '';
+      filtered.forEach((c, i) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${lead.name || ''}</td>
-          <td>${lead.phone || ''}</td>
-          <td>${lead.email || ''}</td>
-          <td>${lead.piano || ''}</td>
-          <td>${lead.lastContacted || ''}</td>
-          <td>
-            <button class="btn" onclick="toggleDetails(${i})">Details</button>
-            <button class="btn" onclick="openModal(${i})">Edit</button>
+          <td onclick="toggleExpand(${i})" style="cursor:pointer;">${c.name}</td>
+          <td>${c.phone}</td>
+          <td>${c.email}</td>
+          <td>${c.piano}</td>
+          <td>${c.lastContacted || ''}</td>
+          <td class="actions">
+            <button onclick="openEdit(${i})">Edit</button>
+            <button class="delete" onclick="deleteClient(${i})">Delete</button>
           </td>
         `;
-        tbody.appendChild(row);
-
-        const detailsRow = document.createElement('tr');
-        detailsRow.className = 'expandable-content';
-        detailsRow.id = 'details-' + i;
-        detailsRow.innerHTML = `<td colspan="6">
-          <strong>Status:</strong> ${lead.status || ''} <br>
-          <strong>Owner:</strong> ${lead.owner || ''} <br>
-          <strong>Notes:</strong> ${lead.notes || ''} <br>
-          <strong>Cost:</strong> ${lead.cost || ''} <br>
-        </td>`;
-        tbody.appendChild(detailsRow);
+        tableBody.appendChild(row);
+        const expandRow = document.createElement('tr');
+        expandRow.classList.add('expand-row');
+        expandRow.id = `expand-${i}`;
+        expandRow.innerHTML = `
+          <td colspan="6" class="expand-cell">
+            <strong>Status:</strong> ${c.status || ''}<br>
+            <strong>Cost:</strong> ${c.cost || ''}<br>
+            <strong>Lead Owner:</strong> ${c.leadOwner || ''}<br>
+            <strong>Notes:</strong> ${c.notes || ''}<br>
+            ${c.status === 'Closed' ? `
+              <strong>Time of Sale:</strong> ${c.timeOfSale || ''}<br>
+              <strong>Delivery Location:</strong> ${c.deliveryLocation || ''}<br>
+              <strong>Stairs:</strong> ${c.stairs || ''}
+            ` : ''}
+          </td>
+        `;
+        tableBody.appendChild(expandRow);
       });
+      saveClients();
     }
 
-    function toggleDetails(index) {
-      const row = document.getElementById('details-' + index);
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const newClient = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        piano: document.getElementById('piano').value,
+        lastContacted: document.getElementById('lastContacted').value,
+        status: document.getElementById('status').value,
+        cost: document.getElementById('cost').value,
+        leadOwner: document.getElementById('leadOwner').value,
+        notes: document.getElementById('notes').value,
+        timeOfSale: document.getElementById('timeOfSale').value,
+        deliveryLocation: document.getElementById('deliveryLocation').value,
+        stairs: document.getElementById('stairs').value
+      };
+      clients.push(newClient);
+      renderClients();
+      form.reset();
+      form.style.display = 'none';
+    });
+
+    function deleteClient(i) {
+      clients.splice(i, 1);
+      renderClients();
+    }
+    function toggleExpand(i) {
+      const row = document.getElementById(`expand-${i}`);
       row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
     }
 
-    function openModal(index) {
-      editIndex = index;
-      const lead = leads[index];
-      const form = document.getElementById('editForm');
-      form.innerHTML = `
-        <label>Name: <input type="text" id="editName" value="${lead.name || ''}"></label><br>
-        <label>Phone: <input type="text" id="editPhone" value="${lead.phone || ''}"></label><br>
-        <label>Email: <input type="text" id="editEmail" value="${lead.email || ''}"></label><br>
-        <label>Piano: <input type="text" id="editPiano" value="${lead.piano || ''}"></label><br>
-        <label>Last Contacted: <input type="date" id="editLastContacted" value="${lead.lastContacted || ''}"></label><br>
+    function openEdit(i) {
+      editIndex = i;
+      const c = clients[i];
+      editForm.innerHTML = `
+        <label>Name: <input type="text" id="editName" value="${c.name}" required></label>
+        <label>Phone Number: <input type="text" id="editPhone" value="${c.phone}"></label>
+        <label>Email: <input type="email" id="editEmail" value="${c.email}"></label>
+        <label>Piano: <input type="text" id="editPiano" value="${c.piano}"></label>
+        <label>Last Contacted: <input type="date" id="editLastContacted" value="${c.lastContacted || ''}"></label>
         <label>Status:
           <select id="editStatus">
-            <option ${lead.status==='New Lead'?'selected':''}>New Lead</option>
-            <option ${lead.status==='Working Deal'?'selected':''}>Working Deal</option>
-            <option ${lead.status==='Closed'?'selected':''}>Closed</option>
+            <option ${c.status==='New Lead'?'selected':''}>New Lead</option>
+            <option ${c.status==='Working Deal'?'selected':''}>Working Deal</option>
+            <option ${c.status==='Closed'?'selected':''}>Closed</option>
           </select>
-        </label><br>
-        <label>Owner:
-          <select id="editOwner">
-            <option ${lead.owner==='Ethan'?'selected':''}>Ethan</option>
-            <option ${lead.owner==='Tristan'?'selected':''}>Tristan</option>
-            <option ${lead.owner==='Dan'?'selected':''}>Dan</option>
-            <option ${lead.owner==='Josh'?'selected':''}>Josh</option>
-            <option ${lead.owner==='Other'?'selected':''}>Other</option>
+        </label>
+        <label>Cost ($): <input type="number" id="editCost" step="0.01" value="${c.cost||''}"></label>
+        <label>Lead Owner:
+          <select id="editLeadOwner">
+            <option ${c.leadOwner==='Me'?'selected':''}>Me</option>
+            <option ${c.leadOwner==='Tristan'?'selected':''}>Tristan</option>
+            <option ${c.leadOwner==='Dan'?'selected':''}>Dan</option>
+            <option ${c.leadOwner==='Josh'?'selected':''}>Josh</option>
+            <option ${c.leadOwner==='Other'?'selected':''}>Other</option>
           </select>
-        </label><br>
-        <label>Notes: <textarea id="editNotes">${lead.notes || ''}</textarea></label><br>
-        <label>Cost: <input type="number" id="editCost" value="${lead.cost || ''}"></label>
+        </label>
+        <label>Notes: <textarea id="editNotes">${c.notes||''}</textarea></label>
+        <div id="editClosedFields" style="display:${c.status==='Closed'?'block':'none'};">
+          <label>Time of Sale: <input type="datetime-local" id="editTimeOfSale" value="${c.timeOfSale||''}"></label>
+          <label>Delivery Location: <input type="text" id="editDeliveryLocation" value="${c.deliveryLocation||''}"></label>
+          <label>Number of Stairs: <input type="number" id="editStairs" value="${c.stairs||''}"></label>
+        </div>
+        <button type="button" onclick="saveEdit()">Save Changes</button>
       `;
-      document.getElementById('editModal').style.display = 'block';
+      editModal.style.display = 'flex';
+      document.getElementById('editStatus').addEventListener('change', e => {
+        document.getElementById('editClosedFields').style.display = e.target.value === 'Closed' ? 'block' : 'none';
+      });
     }
-
-    function closeModal() {
-      document.getElementById('editModal').style.display = 'none';
-    }
+    function closeModal() { editModal.style.display = 'none'; }
 
     function saveEdit() {
       if (editIndex === null) return;
-      const lead = leads[editIndex];
-      lead.name = document.getElementById('editName').value;
-      lead.phone = document.getElementById('editPhone').value;
-      lead.email = document.getElementById('editEmail').value;
-      lead.piano = document.getElementById('editPiano').value;
-      lead.lastContacted = document.getElementById('editLastContacted').value;
-      lead.status = document.getElementById('editStatus').value;
-      lead.owner = document.getElementById('editOwner').value;
-      lead.notes = document.getElementById('editNotes').value;
-      lead.cost = document.getElementById('editCost').value;
-
-      localStorage.setItem('crmLeads', JSON.stringify(leads));
+      const c = clients[editIndex];
+      c.name = document.getElementById('editName').value;
+      c.phone = document.getElementById('editPhone').value;
+      c.email = document.getElementById('editEmail').value;
+      c.piano = document.getElementById('editPiano').value;
+      c.lastContacted = document.getElementById('editLastContacted').value;
+      c.status = document.getElementById('editStatus').value;
+      c.cost = document.getElementById('editCost').value;
+      c.leadOwner = document.getElementById('editLeadOwner').value;
+      c.notes = document.getElementById('editNotes').value;
+      if (c.status === 'Closed') {
+        c.timeOfSale = document.getElementById('editTimeOfSale').value;
+        c.deliveryLocation = document.getElementById('editDeliveryLocation').value;
+        c.stairs = document.getElementById('editStairs').value;
+      } else {
+        c.timeOfSale = ''; c.deliveryLocation = ''; c.stairs = '';
+      }
+      renderClients();
       closeModal();
-      renderTable();
     }
 
-    document.getElementById('searchInput').addEventListener('input', renderTable);
-    document.getElementById('statusFilter').addEventListener('change', renderTable);
-    document.getElementById('ownerFilter').addEventListener('change', renderTable);
-    document.getElementById('fromDate').addEventListener('change', renderTable);
-    document.getElementById('toDate').addEventListener('change', renderTable);
+    // Filtering
+    function applyFilters() {
+      const status = document.getElementById('filterStatus').value;
+      const owner = document.getElementById('filterOwner').value;
+      const from = document.getElementById('filterFrom').value;
+      const to = document.getElementById('filterTo').value;
+      let filtered = clients.filter(c => {
+        let match = true;
+        if (status && c.status !== status) match = false;
+        if (owner && c.leadOwner !== owner) match = false;
+        if (from && c.lastContacted && c.lastContacted < from) match = false;
+        if (to && c.lastContacted && c.lastContacted > to) match = false;
+        return match;
+      });
+      renderClients(filtered);
+    }
+    function clearFilters() {
+      document.getElementById('filterStatus').value = '';
+      document.getElementById('filterOwner').value = '';
+      document.getElementById('filterFrom').value = '';
+      document.getElementById('filterTo').value = '';
+      renderClients();
+    }
 
-    renderTable();
+    renderClients();
   </script>
 </body>
 </html>
