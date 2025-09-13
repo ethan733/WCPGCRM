@@ -4,325 +4,206 @@
   <meta charset="UTF-8">
   <title>World Class Piano Gallery CRM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="favicon.png">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9fafb;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-    header {
-      display: flex;
-      align-items: center;
-      background: #111827;
-      color: white;
-      padding: 10px 20px;
-    }
-    header img {
-      height: 40px;
-      margin-right: 15px;
-    }
-    h1 {
-      font-size: 20px;
-      margin: 0;
-    }
-    .container {
-      padding: 20px;
-    }
-    .filter-toggle {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-    .filters {
-      display: none;
-      background: #fff;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-    .filters.active {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
-    }
-    .filters label {
-      font-size: 14px;
-      margin-bottom: 5px;
-      display: block;
-    }
-    .filters input, .filters select {
-      width: 100%;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-      font-size: 14px;
-    }
-    th {
-      background: #f3f4f6;
-    }
-    tr:hover {
-      background: #f9fafb;
-    }
-    .expand-btn, .edit-btn {
-      padding: 5px 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    .expand-btn {
-      background: #6b7280;
-      color: white;
-    }
-    .edit-btn {
-      background: #2563eb;
-      color: white;
-    }
-    .details {
-      display: none;
-      background: #f9fafb;
-    }
-    .details td {
-      padding: 10px;
-      font-size: 13px;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
+    header { background: #333; color: #fff; padding: 1rem; display: flex; align-items: center; }
+    header img { height: 40px; margin-right: 10px; }
+    header h1 { font-size: 1.5rem; margin: 0; }
+    .container { padding: 20px; }
+
+    /* Filter panel */
+    .filter-panel { display: none; margin-bottom: 15px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+    .filter-panel input, .filter-panel select { padding: 5px; width: 100%; }
+
+    .btn { background: #333; color: #fff; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    .btn:hover { background: #555; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    tr.expandable-content { display: none; background: #fafafa; }
+
     /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      width: 400px;
-      max-width: 90%;
-    }
-    .modal-content h2 {
-      margin-top: 0;
-    }
-    .modal-content input, .modal-content select, .modal-content textarea {
-      width: 100%;
-      margin: 5px 0 10px;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .modal-actions {
-      text-align: right;
-    }
-    .modal-actions button {
-      padding: 6px 12px;
-      margin-left: 5px;
-    }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+    .modal-content { background: #fff; padding: 20px; margin: 10% auto; width: 90%; max-width: 500px; border-radius: 8px; }
+    .close { float: right; cursor: pointer; font-size: 20px; }
   </style>
 </head>
 <body>
-<header>
-  <img src="logo.png" alt="Logo">
-  <h1>World Class Piano Gallery CRM</h1>
-</header>
+  <header>
+    <img src="logo.png" alt="Logo">
+    <h1>World Class Piano Gallery CRM</h1>
+  </header>
 
-<div class="container">
-  <button class="filter-toggle" onclick="toggleFilters()">Show Filters</button>
-  <div class="filters" id="filters">
-    <div>
-      <label for="search">Search</label>
-      <input type="text" id="search" placeholder="Search leads...">
-    </div>
-    <div>
-      <label for="statusFilter">Status</label>
-      <select id="statusFilter">
-        <option value="">All</option>
-        <option value="New Lead">New Lead</option>
-        <option value="Working Deal">Working Deal</option>
-        <option value="Closed">Closed</option>
-      </select>
-    </div>
-    <div>
-      <label for="ownerFilter">Lead Owner</label>
-      <select id="ownerFilter">
-        <option value="">All</option>
-        <option value="Ethan">Ethan</option>
-        <option value="Tristan">Tristan</option>
-        <option value="Dan">Dan</option>
-        <option value="Josh">Josh</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
-    <div>
-      <label for="dateFilter">Last Contacted After</label>
-      <input type="date" id="dateFilter">
-    </div>
-  </div>
-
-  <table id="leadTable">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Email</th>
-        <th>Piano</th>
-        <th>Last Contacted</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="leadBody">
-      <tr>
-        <td>Jane Doe</td>
-        <td>555-1234</td>
-        <td>jane@example.com</td>
-        <td>Yamaha U1</td>
-        <td>2025-09-10</td>
-        <td>
-          <button class="expand-btn" onclick="toggleDetails(this)">Expand</button>
-          <button class="edit-btn" onclick="openEditModal(this)">Edit</button>
-        </td>
-      </tr>
-      <tr class="details">
-        <td colspan="6">
-          <b>Status:</b> New Lead<br>
-          <b>Lead Owner:</b> Ethan<br>
-          <b>Notes:</b> Interested in upright models.
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- Edit Modal -->
-<div class="modal" id="editModal">
-  <div class="modal-content">
-    <h2>Edit Lead</h2>
-    <form id="editForm">
-      <input type="text" id="editName" placeholder="Name">
-      <input type="text" id="editPhone" placeholder="Phone">
-      <input type="email" id="editEmail" placeholder="Email">
-      <input type="text" id="editPiano" placeholder="Piano">
-      <input type="date" id="editLastContacted">
-      <select id="editStatus">
-        <option>New Lead</option>
-        <option>Working Deal</option>
-        <option>Closed</option>
-      </select>
-      <select id="editOwner">
-        <option>Ethan</option>
-        <option>Tristan</option>
-        <option>Dan</option>
-        <option>Josh</option>
-        <option>Other</option>
-      </select>
-      <textarea id="editNotes" placeholder="Notes"></textarea>
-      <div class="modal-actions">
-        <button type="button" onclick="closeModal()">Cancel</button>
-        <button type="submit">Save</button>
+  <div class="container">
+    <button class="btn" onclick="toggleFilterPanel()">Show Filters</button>
+    <div id="filterPanel" class="filter-panel">
+      <div class="filter-grid">
+        <input type="text" id="searchInput" placeholder="Search name, phone, email, piano">
+        <select id="statusFilter">
+          <option value="">All Statuses</option>
+          <option>New Lead</option>
+          <option>Working Deal</option>
+          <option>Closed</option>
+        </select>
+        <select id="ownerFilter">
+          <option value="">All Owners</option>
+          <option>Ethan</option>
+          <option>Tristan</option>
+          <option>Dan</option>
+          <option>Josh</option>
+          <option>Other</option>
+        </select>
+        <input type="date" id="fromDate">
+        <input type="date" id="toDate">
       </div>
-    </form>
+    </div>
+
+    <table id="crmTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Email</th>
+          <th>Piano</th>
+          <th>Last Contacted</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
   </div>
-</div>
 
-<script>
-  function toggleFilters() {
-    document.getElementById('filters').classList.toggle('active');
-  }
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Edit Lead</h2>
+      <form id="editForm"></form>
+      <button class="btn" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
 
-  function toggleDetails(btn) {
-    const row = btn.closest('tr').nextElementSibling;
-    row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
-  }
+  <script>
+    let leads = JSON.parse(localStorage.getItem('crmLeads')) || [];
+    let editIndex = null;
 
-  // Filtering
-  document.getElementById('search').addEventListener('input', filterLeads);
-  document.getElementById('statusFilter').addEventListener('change', filterLeads);
-  document.getElementById('ownerFilter').addEventListener('change', filterLeads);
-  document.getElementById('dateFilter').addEventListener('change', filterLeads);
+    function toggleFilterPanel() {
+      const panel = document.getElementById("filterPanel");
+      panel.style.display = panel.style.display === "block" ? "none" : "block";
+    }
 
-  function filterLeads() {
-    const search = document.getElementById('search').value.toLowerCase();
-    const status = document.getElementById('statusFilter').value;
-    const owner = document.getElementById('ownerFilter').value;
-    const date = document.getElementById('dateFilter').value;
+    function renderTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const ownerFilter = document.getElementById('ownerFilter').value;
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate = document.getElementById('toDate').value;
 
-    const rows = document.querySelectorAll('#leadBody tr:not(.details)');
-    rows.forEach(row => {
-      const details = row.nextElementSibling;
-      const text = row.innerText.toLowerCase() + details.innerText.toLowerCase();
-      const matchesSearch = !search || text.includes(search);
-      const matchesStatus = !status || details.innerText.includes(status);
-      const matchesOwner = !owner || details.innerText.includes(owner);
-      const matchesDate = !date || new Date(row.cells[4].innerText) >= new Date(date);
-      row.style.display = details.style.display = (matchesSearch && matchesStatus && matchesOwner && matchesDate) ? '' : 'none';
-    });
-  }
+      leads.forEach((lead, i) => {
+        // Apply filters
+        if (search && !(`${lead.name} ${lead.phone} ${lead.email} ${lead.piano}`.toLowerCase().includes(search))) return;
+        if (statusFilter && lead.status !== statusFilter) return;
+        if (ownerFilter && lead.owner !== ownerFilter) return;
+        if (fromDate && (!lead.lastContacted || new Date(lead.lastContacted) < new Date(fromDate))) return;
+        if (toDate && (!lead.lastContacted || new Date(lead.lastContacted) > new Date(toDate))) return;
 
-  // Modal
-  let currentRow;
-  function openEditModal(btn) {
-    currentRow = btn.closest('tr');
-    const details = currentRow.nextElementSibling;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${lead.name || ''}</td>
+          <td>${lead.phone || ''}</td>
+          <td>${lead.email || ''}</td>
+          <td>${lead.piano || ''}</td>
+          <td>${lead.lastContacted || ''}</td>
+          <td>
+            <button class="btn" onclick="toggleDetails(${i})">Details</button>
+            <button class="btn" onclick="openModal(${i})">Edit</button>
+          </td>
+        `;
+        tbody.appendChild(row);
 
-    document.getElementById('editName').value = currentRow.cells[0].innerText;
-    document.getElementById('editPhone').value = currentRow.cells[1].innerText;
-    document.getElementById('editEmail').value = currentRow.cells[2].innerText;
-    document.getElementById('editPiano').value = currentRow.cells[3].innerText;
-    document.getElementById('editLastContacted').value = currentRow.cells[4].innerText;
-    document.getElementById('editStatus').value = details.innerText.includes("Closed") ? "Closed" : 
-                                                  details.innerText.includes("Working Deal") ? "Working Deal" : "New Lead";
-    if (details.innerText.includes("Ethan")) document.getElementById('editOwner').value = "Ethan";
-    else if (details.innerText.includes("Tristan")) document.getElementById('editOwner').value = "Tristan";
-    else if (details.innerText.includes("Dan")) document.getElementById('editOwner').value = "Dan";
-    else if (details.innerText.includes("Josh")) document.getElementById('editOwner').value = "Josh";
-    else document.getElementById('editOwner').value = "Other";
+        const detailsRow = document.createElement('tr');
+        detailsRow.className = 'expandable-content';
+        detailsRow.id = 'details-' + i;
+        detailsRow.innerHTML = `<td colspan="6">
+          <strong>Status:</strong> ${lead.status || ''} <br>
+          <strong>Owner:</strong> ${lead.owner || ''} <br>
+          <strong>Notes:</strong> ${lead.notes || ''} <br>
+          <strong>Cost:</strong> ${lead.cost || ''} <br>
+        </td>`;
+        tbody.appendChild(detailsRow);
+      });
+    }
 
-    document.getElementById('editNotes').value = details.innerText.split("Notes:")[1]?.trim() || "";
-    document.getElementById('editModal').style.display = 'flex';
-  }
+    function toggleDetails(index) {
+      const row = document.getElementById('details-' + index);
+      row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
+    }
 
-  function closeModal() {
-    document.getElementById('editModal').style.display = 'none';
-  }
+    function openModal(index) {
+      editIndex = index;
+      const lead = leads[index];
+      const form = document.getElementById('editForm');
+      form.innerHTML = `
+        <label>Name: <input type="text" id="editName" value="${lead.name || ''}"></label><br>
+        <label>Phone: <input type="text" id="editPhone" value="${lead.phone || ''}"></label><br>
+        <label>Email: <input type="text" id="editEmail" value="${lead.email || ''}"></label><br>
+        <label>Piano: <input type="text" id="editPiano" value="${lead.piano || ''}"></label><br>
+        <label>Last Contacted: <input type="date" id="editLastContacted" value="${lead.lastContacted || ''}"></label><br>
+        <label>Status:
+          <select id="editStatus">
+            <option ${lead.status==='New Lead'?'selected':''}>New Lead</option>
+            <option ${lead.status==='Working Deal'?'selected':''}>Working Deal</option>
+            <option ${lead.status==='Closed'?'selected':''}>Closed</option>
+          </select>
+        </label><br>
+        <label>Owner:
+          <select id="editOwner">
+            <option ${lead.owner==='Ethan'?'selected':''}>Ethan</option>
+            <option ${lead.owner==='Tristan'?'selected':''}>Tristan</option>
+            <option ${lead.owner==='Dan'?'selected':''}>Dan</option>
+            <option ${lead.owner==='Josh'?'selected':''}>Josh</option>
+            <option ${lead.owner==='Other'?'selected':''}>Other</option>
+          </select>
+        </label><br>
+        <label>Notes: <textarea id="editNotes">${lead.notes || ''}</textarea></label><br>
+        <label>Cost: <input type="number" id="editCost" value="${lead.cost || ''}"></label>
+      `;
+      document.getElementById('editModal').style.display = 'block';
+    }
 
-  document.getElementById('editForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    currentRow.cells[0].innerText = document.getElementById('editName').value;
-    currentRow.cells[1].innerText = document.getElementById('editPhone').value;
-    currentRow.cells[2].innerText = document.getElementById('editEmail').value;
-    currentRow.cells[3].innerText = document.getElementById('editPiano').value;
-    currentRow.cells[4].innerText = document.getElementById('editLastContacted').value;
+    function closeModal() {
+      document.getElementById('editModal').style.display = 'none';
+    }
 
-    const details = currentRow.nextElementSibling;
-    details.innerHTML = `<td colspan="6">
-      <b>Status:</b> ${document.getElementById('editStatus').value}<br>
-      <b>Lead Owner:</b> ${document.getElementById('editOwner').value}<br>
-      <b>Notes:</b> ${document.getElementById('editNotes').value}
-    </td>`;
+    function saveEdit() {
+      if (editIndex === null) return;
+      const lead = leads[editIndex];
+      lead.name = document.getElementById('editName').value;
+      lead.phone = document.getElementById('editPhone').value;
+      lead.email = document.getElementById('editEmail').value;
+      lead.piano = document.getElementById('editPiano').value;
+      lead.lastContacted = document.getElementById('editLastContacted').value;
+      lead.status = document.getElementById('editStatus').value;
+      lead.owner = document.getElementById('editOwner').value;
+      lead.notes = document.getElementById('editNotes').value;
+      lead.cost = document.getElementById('editCost').value;
 
-    closeModal();
-  });
-</script>
+      localStorage.setItem('crmLeads', JSON.stringify(leads));
+      closeModal();
+      renderTable();
+    }
+
+    document.getElementById('searchInput').addEventListener('input', renderTable);
+    document.getElementById('statusFilter').addEventListener('change', renderTable);
+    document.getElementById('ownerFilter').addEventListener('change', renderTable);
+    document.getElementById('fromDate').addEventListener('change', renderTable);
+    document.getElementById('toDate').addEventListener('change', renderTable);
+
+    renderTable();
+  </script>
 </body>
 </html>
