@@ -11,7 +11,6 @@
 <body class="bg-gray-100 text-gray-900 font-roboto">
   <header id="header" class="sticky top-0 z-50 bg-indigo-700 text-white shadow-lg border-b border-indigo-600 transition-all duration-300">
     <div class="max-w-7xl mx-auto px-6">
-      <!-- Top bar row -->
       <div class="flex items-center justify-between py-3" id="headerContent">
         <div class="flex items-center gap-3">
           <img src="appstore.png" alt="World Class Piano Gallery Logo" class="w-10 h-10 rounded-md shadow-md" />
@@ -26,10 +25,9 @@
             <option value="emerald">Emerald</option>
             <option value="rose">Rose</option>
           </select>
-          <button id="newLeadBtn" class="px-4 py-2 rounded-md bg-white text-indigo-700 font-semibold shadow hover:bg-gray-100 transition font-inter">+ New Lead</button>
+          <button id="newLeadBtn" type="button" class="px-4 py-2 rounded-md bg-white text-indigo-700 font-semibold shadow hover:bg-gray-100 transition font-inter">+ New Lead</button>
         </div>
       </div>
-      <!-- Navigation row -->
       <nav class="flex mt-2 rounded-md overflow-hidden border border-indigo-600 font-inter text-base" role="tablist">
         <button data-tab="open" class="tab btn-tab flex-1 text-center py-3 font-bold">Open</button>
         <button data-tab="closed" class="tab btn-tab flex-1 text-center py-3 font-bold">Closed</button>
@@ -60,8 +58,8 @@
     </div>
 
     <div class="flex justify-end gap-3 mt-6 font-roboto text-sm">
-      <button id="exportCsvBtn" class="px-3 py-1.5 rounded-md border bg-white hover:bg-gray-100 text-xs">Export CSV</button>
-      <button id="exportJsonBtn" class="px-3 py-1.5 rounded-md border bg-white hover:bg-gray-100 text-xs">Export JSON</button>
+      <button id="exportCsvBtn" type="button" class="px-3 py-1.5 rounded-md border bg-white hover:bg-gray-100 text-xs">Export CSV</button>
+      <button id="exportJsonBtn" type="button" class="px-3 py-1.5 rounded-md border bg-white hover:bg-gray-100 text-xs">Export JSON</button>
       <label class="px-3 py-1.5 rounded-md border bg-white hover:bg-gray-100 cursor-pointer text-xs">
         Import JSON
         <input type="file" id="importJsonInput" accept="application/json" class="hidden" />
@@ -71,11 +69,35 @@
   </main>
 
   <!-- Lead modal -->
-  <dialog id="leadModal" class="p-0 rounded-lg w-[95%] max-w-2xl shadow-xl font-roboto text-sm">
-    <!-- ... unchanged modal code ... -->
+  <dialog id="leadModal" class="p-6 rounded-lg w-[95%] max-w-2xl shadow-xl font-roboto text-sm">
+    <form id="leadForm" class="space-y-4">
+      <h2 id="leadModalTitle" class="text-lg font-bold font-inter">New Lead</h2>
+      <input type="hidden" id="leadId" />
+      <div>
+        <label class="block text-sm font-medium">Name</label>
+        <input type="text" id="leadName" class="w-full border rounded px-2 py-1" required />
+        <p id="errorName" class="text-red-500 text-xs hidden">Name is required.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Phone</label>
+        <input type="text" id="leadPhone" class="w-full border rounded px-2 py-1" required />
+        <p id="errorPhone" class="text-red-500 text-xs hidden">Phone is required.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Email</label>
+        <input type="email" id="leadEmail" class="w-full border rounded px-2 py-1" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Budget</label>
+        <input type="text" id="leadBudget" class="w-full border rounded px-2 py-1" />
+      </div>
+      <div class="flex justify-end gap-2 mt-4">
+        <button type="button" id="cancelLeadBtn" class="px-3 py-1 bg-gray-200 rounded">Cancel</button>
+        <button type="submit" id="saveLeadBtn" class="px-3 py-1 bg-indigo-600 text-white rounded">Save</button>
+      </div>
+    </form>
   </dialog>
 
-  <!-- Close modal -->
   <dialog id="closeModal" class="p-0 rounded-lg w-[95%] max-w-xl shadow-xl font-roboto text-sm">
     <!-- ... unchanged modal code ... -->
   </dialog>
@@ -95,7 +117,6 @@
     body.emerald header { @apply bg-emerald-600 text-white; }
     body.rose header { @apply bg-rose-600 text-white; }
 
-    /* Font families */
     .font-inter { font-family: 'Inter', sans-serif; }
     .font-roboto { font-family: 'Roboto', sans-serif; }
   </style>
@@ -106,6 +127,7 @@
 
     let allLeads = JSON.parse(localStorage.getItem('leads')||'[]');
     let currentTab='open';
+    let editingLeadId=null;
 
     function saveLeads(){ localStorage.setItem('leads', JSON.stringify(allLeads)); }
     function formatDate(ts){ if(!ts) return ''; const d=new Date(ts); return d.toLocaleString(); }
@@ -173,6 +195,82 @@
         themeSelector.value='light';
       }
     }
+
+    // Open modal for new lead
+    $('#newLeadBtn').addEventListener('click',()=>{
+      editingLeadId=null;
+      $('#leadModalTitle').textContent='New Lead';
+      $('#leadId').value='';
+      $('#leadName').value='';
+      $('#leadPhone').value='';
+      $('#leadEmail').value='';
+      $('#leadBudget').value='';
+      hideErrors();
+      $('#leadModal').showModal();
+    });
+
+    // Open modal for editing lead
+    function openLeadModal(lead){
+      editingLeadId=lead.id;
+      $('#leadModalTitle').textContent='Edit Lead';
+      $('#leadId').value=lead.id;
+      $('#leadName').value=lead.name||'';
+      $('#leadPhone').value=lead.phone||'';
+      $('#leadEmail').value=lead.email||'';
+      $('#leadBudget').value=lead.budget||'';
+      hideErrors();
+      $('#leadModal').showModal();
+    }
+
+    function hideErrors(){
+      $('#errorName').classList.add('hidden');
+      $('#errorPhone').classList.add('hidden');
+    }
+
+    // Cancel button
+    $('#cancelLeadBtn').addEventListener('click',()=>{
+      $('#leadModal').close();
+    });
+
+    // Save (new or edited) lead
+    $('#leadForm').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      let valid=true;
+      hideErrors();
+
+      if(!$('#leadName').value.trim()){
+        $('#errorName').classList.remove('hidden');
+        valid=false;
+      }
+      if(!$('#leadPhone').value.trim()){
+        $('#errorPhone').classList.remove('hidden');
+        valid=false;
+      }
+      if(!valid) return;
+
+      if(editingLeadId){
+        const lead=allLeads.find(x=>x.id===editingLeadId);
+        if(lead){
+          lead.name=$('#leadName').value;
+          lead.phone=$('#leadPhone').value;
+          lead.email=$('#leadEmail').value;
+          lead.budget=$('#leadBudget').value;
+        }
+      } else {
+        const newLead={
+          id:Date.now(),
+          name:$('#leadName').value,
+          phone:$('#leadPhone').value,
+          email:$('#leadEmail').value,
+          budget:$('#leadBudget').value,
+          status:'open'
+        };
+        allLeads.push(newLead);
+      }
+      saveLeads();
+      render();
+      $('#leadModal').close();
+    });
 
     // Compact header on scroll
     window.addEventListener('scroll',()=>{
