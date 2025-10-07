@@ -6,13 +6,14 @@
   <title>WCPG CRM</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { @apply bg-neutral-100 dark:bg-zinc-950 text-neutral-900 dark:text-neutral-100 font-sans; }
-    header, nav, main { @apply w-full; }
-    header { @apply bg-white dark:bg-zinc-900 shadow border-b border-neutral-200 dark:border-zinc-800 p-4 flex justify-between items-center; }
+    html, body { height: 100%; margin: 0; }
+    body { @apply bg-neutral-100 dark:bg-zinc-950 text-neutral-900 dark:text-neutral-100 font-sans flex flex-col; }
+    header { @apply bg-white dark:bg-zinc-900 shadow border-b border-neutral-200 dark:border-zinc-800 p-4 flex justify-between items-center sticky top-0 z-50; }
     h1 { @apply text-2xl font-bold; }
     .tab-btn { @apply flex-1 text-center py-3 text-sm font-semibold uppercase tracking-wide border-b-2 border-transparent transition; }
     .tab-btn.active { @apply border-sky-600 text-sky-600 dark:text-sky-400; }
-    .btn { @apply px-3 py-2 rounded-md border border-neutral-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-700 text-sm; }
+    nav { @apply flex border-b border-neutral-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 sticky top-[64px] z-40; }
+    .btn { @apply px-3 py-2 rounded-md border border-neutral-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-700 text-sm transition; }
     .btn-primary { @apply bg-sky-600 text-white hover:bg-sky-700; }
     .input, select, textarea { @apply bg-white dark:bg-zinc-900 border border-neutral-300 dark:border-zinc-700 px-3 py-2 rounded-md text-sm w-full; }
     .card { @apply bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 p-4 rounded-md shadow-sm; }
@@ -20,12 +21,13 @@
     th, td { @apply border-b border-neutral-200 dark:border-zinc-800 px-3 py-2; }
     th { @apply bg-neutral-50 dark:bg-zinc-800 text-left font-semibold; }
     tr:hover td { @apply bg-neutral-100 dark:bg-zinc-800 transition-colors; }
-    .toolbar { @apply flex justify-between items-center bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 p-3 rounded-md; }
+    .toolbar { @apply flex justify-between items-center bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 p-3 rounded-md shadow-sm; }
     .table-wrap { @apply bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-md shadow-sm overflow-auto; }
     .dropdown { @apply relative inline-block text-left; }
     .dropdown-menu { @apply absolute right-0 mt-2 w-36 origin-top-right bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 rounded-md shadow-lg hidden; }
     .dropdown-menu button { @apply w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-zinc-700; }
     .dropdown.open .dropdown-menu { @apply block; }
+    footer { @apply mt-auto text-center text-xs text-neutral-500 dark:text-neutral-400 py-3 border-t border-neutral-200 dark:border-zinc-800 bg-white dark:bg-zinc-900; }
   </style>
 </head>
 <body>
@@ -45,7 +47,7 @@
     </div>
   </header>
 
-  <nav class="flex border-b border-neutral-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+  <nav>
     <button data-tab="leads" class="tab-btn active">Leads</button>
     <button data-tab="deals" class="tab-btn">Deals</button>
     <button data-tab="inventory" class="tab-btn">Inventory</button>
@@ -53,7 +55,7 @@
     <button data-tab="admin" class="tab-btn">Admin</button>
   </nav>
 
-  <main class="max-w-6xl mx-auto p-6 space-y-6">
+  <main class="flex-1 w-full max-w-7xl mx-auto p-6 space-y-6">
     <section id="leads" class="space-y-3">
       <div class="toolbar">
         <button class="btn-primary" id="toggleLeadFormBtn">+ New Lead</button>
@@ -78,7 +80,11 @@
 
       <div class="table-wrap">
         <table>
-          <thead><tr id="leadHead"><th>Name</th><th>Phone</th><th>Email</th><th>Interest</th><th>Actions</th></tr></thead>
+          <thead>
+            <tr id="leadHead">
+              <th>Name</th><th>Phone</th><th>Email</th><th>Interest</th><th>Actions</th>
+            </tr>
+          </thead>
           <tbody id="leadBody">
             <tr>
               <td>John Doe</td><td>555-1234</td><td>john@example.com</td><td>Yamaha C3</td>
@@ -149,11 +155,12 @@
     </section>
   </main>
 
+  <footer>
+    <p>© 2025 WCPG CRM — Inspired by Zoho’s simplicity and power.</p>
+  </footer>
+
   <script>
-    function toggleDropdown(btn){
-      const dd = btn.parentElement;
-      dd.classList.toggle('open');
-    }
+    function toggleDropdown(btn){ const dd = btn.parentElement; dd.classList.toggle('open'); }
     function editLead(id){ alert('Edit lead '+id); }
     function convertLead(id){ alert('Convert lead '+id+' to deal'); }
     function deleteLead(id){ if(confirm('Delete this lead?')) alert('Deleted lead '+id); }
