@@ -1,291 +1,162 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WCPGCRM</title>
+  <title>WCPG CRM</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-  <meta name="description" content="World Class Piano Gallery CRM" />
+  <style>
+    body { @apply bg-neutral-100 dark:bg-zinc-950 text-neutral-900 dark:text-neutral-100 font-sans; }
+    header, nav, main { @apply w-full; }
+    header { @apply bg-white dark:bg-zinc-900 shadow border-b border-neutral-200 dark:border-zinc-800 p-4 flex justify-between items-center; }
+    h1 { @apply text-2xl font-bold; }
+    .tab-btn { @apply flex-1 text-center py-3 text-sm font-semibold uppercase tracking-wide border-b-2 border-transparent transition; }
+    .tab-btn.active { @apply border-sky-600 text-sky-600 dark:text-sky-400; }
+    .btn { @apply px-3 py-2 rounded-md border border-neutral-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-700 text-sm; }
+    .btn-primary { @apply bg-sky-600 text-white hover:bg-sky-700; }
+    .input, select, textarea { @apply bg-white dark:bg-zinc-900 border border-neutral-300 dark:border-zinc-700 px-3 py-2 rounded-md text-sm w-full; }
+    .card { @apply bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 p-4 rounded-md shadow-sm; }
+    table { @apply w-full border-collapse text-sm; }
+    th, td { @apply border-b border-neutral-200 dark:border-zinc-800 px-3 py-2; }
+    th { @apply bg-neutral-50 dark:bg-zinc-800 text-left font-semibold; }
+    tr:hover td { @apply bg-neutral-100 dark:bg-zinc-800 transition-colors; }
+    .toolbar { @apply flex justify-between items-center bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 p-3 rounded-md; }
+    .table-wrap { @apply bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 rounded-md shadow-sm overflow-auto; }
+    .dropdown { @apply relative inline-block text-left; }
+    .dropdown-menu { @apply absolute right-0 mt-2 w-36 origin-top-right bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 rounded-md shadow-lg hidden; }
+    .dropdown-menu button { @apply w-full text-left px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-zinc-700; }
+    .dropdown.open .dropdown-menu { @apply block; }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-roboto">
-  <header id="header" class="sticky top-0 z-50 bg-indigo-700 text-white shadow-lg border-b border-indigo-600 transition-all duration-300">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="flex items-center justify-between py-3" id="headerContent">
-        <div class="flex items-center gap-3">
-          <img src="appstore.png" alt="World Class Piano Gallery Logo" class="w-10 h-10 rounded-md shadow-md" />
-          <h1 class="text-2xl font-extrabold tracking-wide font-inter">WCPGCRM</h1>
-        </div>
-        <div class="flex gap-3 items-center">
-          <label class="text-sm font-medium hidden sm:block">Theme:</label>
-          <select id="themeSelector" class="px-2 py-1 rounded-md text-indigo-700 font-roboto">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="indigo">Indigo</option>
-            <option value="emerald">Emerald</option>
-            <option value="rose">Rose</option>
-          </select>
-          <button id="newLeadBtn" type="button" class="px-4 py-2 rounded-md bg-white text-indigo-700 font-semibold shadow hover:bg-gray-100 transition font-inter">+ New Lead</button>
-        </div>
-      </div>
-      <nav class="flex mt-2 rounded-md overflow-hidden border border-indigo-600 font-inter text-base" role="tablist">
-        <button data-tab="open" class="tab btn-tab flex-1 text-center py-3 font-bold">Open</button>
-        <button data-tab="closed" class="tab btn-tab flex-1 text-center py-3 font-bold">Closed</button>
-        <button data-tab="pending" class="tab btn-tab flex-1 text-center py-3 font-bold">Pending</button>
-        <button data-tab="out" class="tab btn-tab flex-1 text-center py-3 font-bold">Out for Delivery</button>
-        <button data-tab="archived" class="tab btn-tab flex-1 text-center py-3 font-bold">Archived</button>
-      </nav>
+<body>
+  <header>
+    <div>
+      <h1>WCPG CRM</h1>
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">Leads → Deals → Metrics • Inventory linked</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <select id="themeSelect" class="input w-auto">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+      <button id="signInBtn" class="btn-primary">Sign in</button>
+      <button id="signOutBtn" class="btn hidden">Sign out</button>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-6 pb-24 mt-6 font-roboto">
-    <div class="overflow-x-auto bg-white border rounded-lg shadow-md">
-      <table class="min-w-full text-xs text-gray-700 border-collapse border" id="leadsTable">
-        <thead class="bg-gray-100 text-gray-700 font-inter text-sm">
-          <tr>
-            <th class="th border">Name</th>
-            <th class="th border">Phone</th>
-            <th class="th border">Email</th>
-            <th class="th border">Budget</th>
-            <th class="th border">Status</th>
-            <th class="th border archived-col hidden">Delivered At</th>
-            <th class="th border w-56">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="tbody" class="font-roboto text-sm"></tbody>
-      </table>
-      <div id="emptyState" class="hidden p-8 text-center text-gray-400 font-roboto text-sm">No leads to show.</div>
-    </div>
+  <nav class="flex border-b border-neutral-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+    <button data-tab="leads" class="tab-btn active">Leads</button>
+    <button data-tab="deals" class="tab-btn">Deals</button>
+    <button data-tab="inventory" class="tab-btn">Inventory</button>
+    <button data-tab="metrics" class="tab-btn">Metrics</button>
+    <button data-tab="admin" class="tab-btn">Admin</button>
+  </nav>
 
-    <div class="flex justify-end gap-3 mt-6 font-roboto text-sm">
-      <button id="exportCsvBtn" type="button" class="px-3 py-1.5 rounded-md border bg-white hover:bg-gray-100 text-xs">Export CSV</button>
-      <button id="exportJsonBtn" type="button" class="px-3 py-1.5 rounded-md border bg-white hover:bg-gray-100 text-xs">Export JSON</button>
-      <label class="px-3 py-1.5 rounded-md border bg-white hover:bg-gray-100 cursor-pointer text-xs">
-        Import JSON
-        <input type="file" id="importJsonInput" accept="application/json" class="hidden" />
-      </label>
-      <a id="githubLink" class="px-3 py-1.5 rounded-md border bg-white hover:bg-gray-100 text-xs" href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
-    </div>
+  <main class="max-w-6xl mx-auto p-6 space-y-6">
+    <section id="leads" class="space-y-3">
+      <div class="toolbar">
+        <button class="btn-primary" id="toggleLeadFormBtn">+ New Lead</button>
+        <input id="leadSearch" class="input w-64" placeholder="Search leads…" />
+      </div>
+      <div id="leadFormWrap" class="card hidden">
+        <h3 class="font-semibold mb-3" id="leadFormTitle">New Lead</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <input id="lead_name" class="input" placeholder="Name" />
+          <input id="lead_phone" class="input" placeholder="Phone" />
+          <input id="lead_email" class="input" placeholder="Email" />
+          <input id="lead_source" class="input" placeholder="Source (Walk-in, Web, Call)" />
+          <input id="lead_interest" class="input col-span-2" placeholder="Interested in (brand/model)" />
+          <select id="lead_owner" class="input col-span-2"></select>
+          <textarea id="lead_notes" class="input col-span-2" placeholder="Notes"></textarea>
+        </div>
+        <div class="mt-4 flex justify-end gap-2">
+          <button id="saveLeadBtn" class="btn-primary">Save Lead</button>
+          <button id="cancelLeadBtn" class="btn">Cancel</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr id="leadHead"><th>Name</th><th>Phone</th><th>Email</th><th>Interest</th><th>Actions</th></tr></thead>
+          <tbody id="leadBody">
+            <tr>
+              <td>John Doe</td><td>555-1234</td><td>john@example.com</td><td>Yamaha C3</td>
+              <td>
+                <div class="dropdown">
+                  <button class="btn" onclick="toggleDropdown(this)">⋮</button>
+                  <div class="dropdown-menu">
+                    <button onclick="editLead('1')">Edit</button>
+                    <button onclick="convertLead('1')">Convert to Deal</button>
+                    <button onclick="deleteLead('1')">Delete</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="deals" class="hidden space-y-3">
+      <div class="toolbar">
+        <h3 class="font-semibold">Deals</h3>
+        <input id="dealSearch" class="input w-64" placeholder="Search deals…" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Title</th><th>Status</th><th>Buyer</th><th>Amount</th></tr></thead>
+          <tbody id="dealBody"><tr><td>Yamaha C3</td><td>Closed Won</td><td>John Doe</td><td>$12,000</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="inventory" class="hidden space-y-3">
+      <div class="toolbar">
+        <h3 class="font-semibold">Inventory</h3>
+        <input id="invSearch" class="input w-64" placeholder="Search inventory…" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Brand</th><th>Model</th><th>Serial</th><th>Price</th></tr></thead>
+          <tbody id="invBody"><tr><td>Baldwin</td><td>R1</td><td>123456</td><td>$8,500</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="metrics" class="hidden grid md:grid-cols-2 gap-4">
+      <div class="card"><h2 class="font-semibold mb-2">Pipeline Overview</h2><div id="pipelineStats" class="grid grid-cols-2 gap-2 text-sm"></div></div>
+      <div class="card"><h2 class="font-semibold mb-2">Performance by Salesperson</h2><div id="repStats" class="space-y-2 text-sm"></div></div>
+      <div class="card md:col-span-2"><h2 class="font-semibold mb-2">Recent Activity</h2><div id="activityFeed" class="space-y-2 text-sm"></div></div>
+    </section>
+
+    <section id="admin" class="hidden grid md:grid-cols-2 gap-4">
+      <div class="card">
+        <h2 class="font-semibold mb-2">Salespeople</h2>
+        <div class="toolbar mb-2">
+          <input id="newRepName" class="input" placeholder="Name" />
+          <input id="newRepEmail" class="input" placeholder="Email" />
+          <button id="addRepBtn" class="btn-primary">Add</button>
+        </div>
+        <ul id="repList" class="space-y-2 text-sm"></ul>
+      </div>
+      <div class="card">
+        <h2 class="font-semibold mb-2">Integrations</h2>
+        <p class="text-sm opacity-80 mb-2">Paste a call log or webhook data here for caller matching.</p>
+        <textarea id="callersPaste" class="input h-32" placeholder="timestamp, callerId, note"></textarea>
+        <button id="importCallsBtn" class="btn mt-2">Import Call Log</button>
+      </div>
+    </section>
   </main>
 
-  <!-- Lead modal -->
-  <dialog id="leadModal" class="p-6 rounded-lg w-[95%] max-w-2xl shadow-xl font-roboto text-sm">
-    <form id="leadForm" class="space-y-4">
-      <h2 id="leadModalTitle" class="text-lg font-bold font-inter">New Lead</h2>
-      <input type="hidden" id="leadId" />
-      <div>
-        <label class="block text-sm font-medium">Name</label>
-        <input type="text" id="leadName" class="w-full border rounded px-2 py-1" required />
-        <p id="errorName" class="text-red-500 text-xs hidden">Name is required.</p>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Phone</label>
-        <input type="text" id="leadPhone" class="w-full border rounded px-2 py-1" required />
-        <p id="errorPhone" class="text-red-500 text-xs hidden">Phone is required.</p>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Email</label>
-        <input type="email" id="leadEmail" class="w-full border rounded px-2 py-1" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Budget</label>
-        <input type="text" id="leadBudget" class="w-full border rounded px-2 py-1" />
-      </div>
-      <div class="flex justify-end gap-2 mt-4">
-        <button type="button" id="cancelLeadBtn" class="px-3 py-1 bg-gray-200 rounded">Cancel</button>
-        <button type="submit" id="saveLeadBtn" class="px-3 py-1 bg-indigo-600 text-white rounded">Save</button>
-      </div>
-    </form>
-  </dialog>
-
-  <dialog id="closeModal" class="p-0 rounded-lg w-[95%] max-w-xl shadow-xl font-roboto text-sm">
-    <!-- ... unchanged modal code ... -->
-  </dialog>
-
-  <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 hidden bg-indigo-600 text-white px-4 py-2 rounded-md shadow-lg font-inter text-sm"></div>
-
-  <style>
-    .btn-tab { @apply transition; }
-    .btn-tab.active { @apply bg-white text-indigo-700 font-extrabold; }
-    .btn-tab:not(.active) { @apply bg-indigo-700 text-white; }
-    .btn-tab:not(.active):hover { @apply bg-indigo-600 text-white; }
-    .th { @apply text-left font-semibold px-4 py-3; }
-    .td { @apply px-4 py-3 align-top border; }
-    body.dark { @apply bg-gray-900 text-gray-100; }
-    body.dark header { @apply bg-gray-800 text-white; }
-    body.indigo header { @apply bg-indigo-700 text-white; }
-    body.emerald header { @apply bg-emerald-600 text-white; }
-    body.rose header { @apply bg-rose-600 text-white; }
-
-    .font-inter { font-family: 'Inter', sans-serif; }
-    .font-roboto { font-family: 'Roboto', sans-serif; }
-  </style>
-
   <script>
-    const $ = (s, r=document)=>r.querySelector(s);
-    const toast = (m)=>{const t=$('#toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2200)};
-
-    let allLeads = JSON.parse(localStorage.getItem('leads')||'[]');
-    let currentTab='open';
-    let editingLeadId=null;
-
-    function saveLeads(){ localStorage.setItem('leads', JSON.stringify(allLeads)); }
-    function formatDate(ts){ if(!ts) return ''; const d=new Date(ts); return d.toLocaleString(); }
-
-    function updateActiveTab(){
-      document.querySelectorAll('.btn-tab').forEach(btn=>{
-        btn.classList.toggle('active', btn.dataset.tab===currentTab);
-      });
+    function toggleDropdown(btn){
+      const dd = btn.parentElement;
+      dd.classList.toggle('open');
     }
-
-    function render(){
-      const tbody=$('#tbody'); tbody.innerHTML='';
-      document.querySelectorAll('.archived-col').forEach(th=>{
-        th.classList.toggle('hidden', currentTab!=='archived');
-      });
-
-      const view=allLeads.filter(l=>(l.status||'open')===currentTab);
-      if(view.length===0){$('#emptyState').classList.remove('hidden');return;} else $('#emptyState').classList.add('hidden');
-      for(const l of view){ const tr=document.createElement('tr');
-        tr.innerHTML=`<td class='td text-xs'>${l.name||''}</td><td class='td text-xs'>${l.phone||''}</td><td class='td text-xs'>${l.email||''}</td><td class='td text-xs'>${l.budget||''}</td><td class='td text-xs'>${l.status||''}</td>${currentTab==='archived'?`<td class='td text-xs'>${l.deliveredAt ? formatDate(l.deliveredAt) : ''}</td>`:''}<td class='td flex flex-wrap gap-1 text-xs'>
-          <button data-act='close' class='px-2 py-0.5 bg-yellow-500 text-white rounded text-xs'>Close</button>
-          <button data-act='pending' class='px-2 py-0.5 bg-blue-500 text-white rounded text-xs'>Pending</button>
-          <button data-act='out' class='px-2 py-0.5 bg-green-600 text-white rounded text-xs'>Out</button>
-          <button data-act='delivered' class='px-2 py-0.5 bg-purple-600 text-white rounded text-xs'>Delivered</button>
-          <button data-act='edit' class='px-2 py-0.5 bg-indigo-600 text-white rounded text-xs'>Edit</button>
-          <button data-act='delete' class='px-2 py-0.5 bg-red-600 text-white rounded text-xs'>Delete</button>
-        </td>`;
-        tbody.appendChild(tr);
-
-        tr.querySelector('[data-act="close"]').addEventListener('click',()=>openCloseModal(l));
-        tr.querySelector('[data-act="pending"]').addEventListener('click',()=>{l.status='pending';saveLeads();render();});
-        tr.querySelector('[data-act="out"]').addEventListener('click',()=>{l.status='out';saveLeads();render();});
-        tr.querySelector('[data-act="delivered"]').addEventListener('click',()=>{l.status='archived';l.deliveredAt=Date.now();saveLeads();toast('Delivery confirmed ✓ — archived');render();});
-        tr.querySelector('[data-act="delete"]').addEventListener('click',()=>{allLeads=allLeads.filter(x=>x.id!==l.id);saveLeads();render();});
-        tr.querySelector('[data-act="edit"]').addEventListener('click',()=>openLeadModal(l));
-      }
-      updateActiveTab();
-    }
-
-    // Tab switching
-    document.querySelectorAll('.btn-tab').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        currentTab=btn.dataset.tab;
-        render();
-      });
-    });
-
-    // Theme switching
-    const themeSelector=$('#themeSelector');
-    themeSelector.addEventListener('change',()=>{
-      document.body.className=themeSelector.value;
-      localStorage.setItem('crm-theme', themeSelector.value);
-    });
-
-    const savedTheme=localStorage.getItem('crm-theme');
-    if(savedTheme){
-      document.body.className=savedTheme;
-      themeSelector.value=savedTheme;
-    } else {
-      if(window.matchMedia('(prefers-color-scheme: dark)').matches){
-        document.body.className='dark';
-        themeSelector.value='dark';
-      } else {
-        document.body.className='light';
-        themeSelector.value='light';
-      }
-    }
-
-    // Open modal for new lead
-    $('#newLeadBtn').addEventListener('click',()=>{
-      editingLeadId=null;
-      $('#leadModalTitle').textContent='New Lead';
-      $('#leadId').value='';
-      $('#leadName').value='';
-      $('#leadPhone').value='';
-      $('#leadEmail').value='';
-      $('#leadBudget').value='';
-      hideErrors();
-      $('#leadModal').showModal();
-    });
-
-    // Open modal for editing lead
-    function openLeadModal(lead){
-      editingLeadId=lead.id;
-      $('#leadModalTitle').textContent='Edit Lead';
-      $('#leadId').value=lead.id;
-      $('#leadName').value=lead.name||'';
-      $('#leadPhone').value=lead.phone||'';
-      $('#leadEmail').value=lead.email||'';
-      $('#leadBudget').value=lead.budget||'';
-      hideErrors();
-      $('#leadModal').showModal();
-    }
-
-    function hideErrors(){
-      $('#errorName').classList.add('hidden');
-      $('#errorPhone').classList.add('hidden');
-    }
-
-    // Cancel button
-    $('#cancelLeadBtn').addEventListener('click',()=>{
-      $('#leadModal').close();
-    });
-
-    // Save (new or edited) lead
-    $('#leadForm').addEventListener('submit',(e)=>{
-      e.preventDefault();
-      let valid=true;
-      hideErrors();
-
-      if(!$('#leadName').value.trim()){
-        $('#errorName').classList.remove('hidden');
-        valid=false;
-      }
-      if(!$('#leadPhone').value.trim()){
-        $('#errorPhone').classList.remove('hidden');
-        valid=false;
-      }
-      if(!valid) return;
-
-      if(editingLeadId){
-        const lead=allLeads.find(x=>x.id===editingLeadId);
-        if(lead){
-          lead.name=$('#leadName').value;
-          lead.phone=$('#leadPhone').value;
-          lead.email=$('#leadEmail').value;
-          lead.budget=$('#leadBudget').value;
-        }
-      } else {
-        const newLead={
-          id:Date.now(),
-          name:$('#leadName').value,
-          phone:$('#leadPhone').value,
-          email:$('#leadEmail').value,
-          budget:$('#leadBudget').value,
-          status:'open'
-        };
-        allLeads.push(newLead);
-      }
-      saveLeads();
-      render();
-      $('#leadModal').close();
-    });
-
-    // Compact header on scroll
-    window.addEventListener('scroll',()=>{
-      const header=document.getElementById('header');
-      const headerContent=document.getElementById('headerContent');
-      if(window.scrollY>50){
-        header.classList.add('py-1');
-        headerContent.classList.add('scale-95');
-      } else {
-        header.classList.remove('py-1');
-        headerContent.classList.remove('scale-95');
-      }
-    });
-
-    render();
+    function editLead(id){ alert('Edit lead '+id); }
+    function convertLead(id){ alert('Convert lead '+id+' to deal'); }
+    function deleteLead(id){ if(confirm('Delete this lead?')) alert('Deleted lead '+id); }
   </script>
 </body>
 </html>
